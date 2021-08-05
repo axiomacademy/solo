@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
+import 'package:firebase_auth/firebase_auth.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+import '../services/auth_service.dart';
+
+import './register.dart';
 
 /// WelcomePage, redirect to this for unauthneticated user
 class WelcomePage extends StatefulWidget {
@@ -78,7 +83,10 @@ class _WelcomePageState extends State<WelcomePage> {
                 Padding(
                     padding: EdgeInsets.only(top: 20.0),
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          User user = await AuthService.signInWithGoogle();
+                          print(user.email);
+                        },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.grey[200],
                           elevation: 0,
@@ -94,28 +102,19 @@ class _WelcomePageState extends State<WelcomePage> {
                           Spacer()
                         ]))),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(NamePage.route());
+                  },
                   style: ElevatedButton.styleFrom(
                     primary: Theme.of(context).primaryColor,
                   ),
                   child: Row(children: <Widget>[
-                    Icon(Icons.mail),
+                    Icon(Icons.psychology),
                     Spacer(),
-                    Text("LOGIN WITH EMAIL"),
+                    Text("JOIN AXIOM"),
                     Spacer(),
                   ]),
                 ),
-                OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Theme.of(context).primaryColor),
-                    ),
-                    child: Row(children: <Widget>[
-                      Spacer(),
-                      Text("SIGN UP",
-                          style: Theme.of(context).primaryTextTheme.button),
-                      Spacer()
-                    ])),
               ])),
         ]),
       ),

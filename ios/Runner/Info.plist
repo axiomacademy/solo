@@ -41,10 +41,26 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
   <key>NSAppTransportSecurity</key>
   <dict>
       <key>NSAllowsLocalNetworking</key>
       <true/>
   </dict>
+
+  <!-- Google Sign-in Section -->
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <!-- TODO Replace this value: -->
+        <string>com.googleusercontent.apps.816357746057-4s8jeebb16gkd3arodigrg3ektjmdof9</string>
+      </array>
+    </dict>
+  </array>
+  <!-- End of the Google Sign-in Section -->
 </dict>
 </plist>

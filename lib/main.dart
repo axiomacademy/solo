@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_core/firebase_core.dart';
 
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:firebase_auth/firebase_auth.dart';
+
 // Pages
 import './pages/welcome.dart';
 
@@ -19,9 +22,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  /// The future is part of the state of our widget. We should not call `initializeApp`
-  /// directly inside [build].
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
@@ -32,7 +32,7 @@ class _AppState extends State<App> {
         theme: buildTheme(),
         home: FutureBuilder(
           // Initialize FlutterFire:
-          future: _initialization,
+          future: _initFirebase(),
           builder: (context, snapshot) {
             // Check for errors
             if (snapshot.hasError) {
@@ -48,6 +48,16 @@ class _AppState extends State<App> {
             return ErrorState(error: "Loading");
           },
         ));
+  }
+
+  Future<FirebaseApp> _initFirebase() async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Logged in, go straight to home page
+      print("Logged in");
+    }
+    return firebaseApp;
   }
 }
 
