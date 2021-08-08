@@ -20,7 +20,7 @@ class EnergyPage extends StatelessWidget {
                         children: [
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
-                          child: Text("Darn, you need energy ⚡!",
+                          child: Text("You need energy ⚡",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
@@ -28,13 +28,62 @@ class EnergyPage extends StatelessWidget {
                                       height: 1.15,
                                       fontWeight: FontWeight.w500))),
                       Container(
-                          margin: EdgeInsets.only(top: 15.0),
+                          margin: EdgeInsets.only(top: 15.0, bottom: 10.0),
                           child: Text(
-                              "You need energy to mine planets. As you learn and mine more knowledge from a planet, you earn coins. And you can use coins to treat yourself with Starbucks, buy cool trophies and earn rewards!",
+                              "You need energy to mine planets. As you learn and mine more knowledge from a planet, you earn coins. And you can use coins to treat yourself with Starbucks, buy cool trophies and earn other rewards!",
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
-                                  ?.copyWith(height: 1.5))),
+                                  ?.copyWith(height: 1.6))),
+                      Image(image: AssetImage('assets/img/convert.png')),
+                      Container(
+                          margin: EdgeInsets.only(top: 10.0),
+                          child: Text(
+                              "Invest in yourself, and charge your ship with energy. Don't worry you can start with as little as 5 dollars which gives you 50 energy points! This helps you stay on track and remain motivated throughout your learning journey.",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  ?.copyWith(height: 1.6))),
+                      Container(
+                          margin: EdgeInsets.only(top: 30.0),
+                          child: TextFormField(
+                            cursorColor: Theme.of(context).primaryColor,
+                            decoration: InputDecoration(
+                              isDense: true,
+                              filled: true,
+                              suffixText: "SGD",
+                              fillColor: Colors.grey[200],
+                              contentPadding: EdgeInsets.all(15),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2.0,
+                                      color: Theme.of(context).primaryColor),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              hintText: "5",
+                              hintStyle:
+                                  TextStyle(color: Theme.of(context).hintColor),
+                              focusColor: Theme.of(context).primaryColor,
+                            ),
+                          )),
+                      Container(
+                          margin: EdgeInsets.only(top: 10.0),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(PurposePage.route());
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                              ),
+                              child: Row(children: <Widget>[
+                                Spacer(),
+                                Text("CHARGE SHIP"),
+                                Spacer(),
+                              ])))
                     ])))));
   }
 }
@@ -119,7 +168,8 @@ class PurposePage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).push(PurposePage.route());
+                                // Refer to google login and then push
+                                Navigator.of(context).push(EnergyPage.route());
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,

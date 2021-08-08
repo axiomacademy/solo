@@ -73,6 +73,7 @@ flutter:
     - ./assets/img/upskill.png
     - ./assets/img/self-learner.png
     - ./assets/img/purpose.png
+    - ./assets/img/convert.png
   
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
