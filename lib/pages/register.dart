@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:selectable_container/selectable_container.dart';
 
+import './home.dart';
+
 class EnergyPage extends StatelessWidget {
   EnergyPage({Key? key}) : super(key: key);
 
@@ -74,7 +76,7 @@ class EnergyPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).push(PurposePage.route());
+                                Navigator.of(context).push(HomePage.route());
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
