@@ -1,5 +1,201 @@
 import 'package:flutter/material.dart';
 
+class JourneyPage extends StatefulWidget {
+  JourneyPage({Key? key}) : super(key: key);
+
+  static Route route() {
+    return MaterialPageRoute<void>(builder: (_) => JourneyPage());
+  }
+
+  @override
+  _JourneyPageState createState() => _JourneyPageState();
+}
+
+class _JourneyPageState extends State<JourneyPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+        child: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(top: 20.0),
+                            child: Text("Active Missions",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5
+                                    ?.copyWith(fontSize: 24)),
+                          ),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.all(30.0),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.0),
+                                ),
+                              ),
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Row(children: <Widget>[
+                                      Text("🏗️ Build an app",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6
+                                              ?.copyWith(color: Colors.white)),
+                                      Spacer(),
+                                      Text("54 logs".toUpperCase(),
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .overline
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white)),
+                                    ]),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 10.0),
+                                        child: Text(
+                                          "I want to build an app to kickstart my programming career",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              ?.copyWith(color: Colors.white),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ))
+                                  ])),
+                          Container(
+                            margin: EdgeInsets.only(top: 20.0),
+                            child: Text("Recent Activity",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5
+                                    ?.copyWith(fontSize: 24)),
+                          ),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.all(30.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.0),
+                                ),
+                              ),
+                              child: Row(children: <Widget>[
+                                Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text("React Basics",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6),
+                                      Container(
+                                          child: Text("🏗️ Build an app",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1))
+                                    ]),
+                                Spacer(),
+                                Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 20.0),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFFEEE7FA),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0))),
+                                    child: Text("🤔 Recall",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1)),
+                              ])),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.all(30.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.0),
+                                ),
+                              ),
+                              child: Row(children: <Widget>[
+                                Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text("Progress on App",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6),
+                                      Container(
+                                          child: Text("🏗️ Build an app",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1))
+                                    ]),
+                                Spacer(),
+                                Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 20.0),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFFEEE7FA),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0))),
+                                    child: Text("🔥 Progress",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1)),
+                              ])),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.all(30.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.0),
+                                ),
+                              ),
+                              child: Row(children: <Widget>[
+                                Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text("Draw a Boat",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6),
+                                      Container(
+                                          child: Text("🏗️ Build an app",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1))
+                                    ]),
+                                Spacer(),
+                                Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 20.0),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFFEEE7FA),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0))),
+                                    child: Text("🥊 Challenge",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1)),
+                              ])),
+                        ])))));
+  }
+}
+
 class LogPage extends StatefulWidget {
   LogPage({Key? key}) : super(key: key);
 
@@ -60,7 +256,7 @@ class _LogPageState extends State<LogPage> {
             child: Row(children: <Widget>[
               Container(
                   width: 300,
-                  height: 200,
+                  height: 160,
                   padding: EdgeInsets.all(20.0),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
@@ -85,6 +281,8 @@ class _LogPageState extends State<LogPage> {
                             margin: EdgeInsets.only(top: 10.0),
                             child: Text(
                                 "Follow the Udemy course and draw a boot to practice contour and cross contour lines",
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodyText2))
                       ])),
             ])),
@@ -251,10 +449,7 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _widgetOptions = <Widget>[
     ExplorePage(),
     LogPage(),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    JourneyPage()
   ];
 
   void _onItemTapped(int index) {
