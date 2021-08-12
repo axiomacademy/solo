@@ -84,8 +84,9 @@ class _WelcomePageState extends State<WelcomePage> {
                     padding: EdgeInsets.only(top: 20.0),
                     child: ElevatedButton(
                         onPressed: () async {
-                          User user = await AuthService.signInWithGoogle();
-                          print(user.email);
+                          // User user = await AuthService.signInWithGoogle();
+                          // print(user.email);
+                          Navigator.of(context).push(NamePage.route());
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.grey[200],
@@ -97,24 +98,10 @@ class _WelcomePageState extends State<WelcomePage> {
                               width: 17,
                               height: 17),
                           Spacer(),
-                          Text("LOGIN WITH GOOGLE",
+                          Text("SIGNIN WITH GOOGLE",
                               style: Theme.of(context).textTheme.button),
                           Spacer()
                         ]))),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(NamePage.route());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor,
-                  ),
-                  child: Row(children: <Widget>[
-                    Icon(Icons.psychology),
-                    Spacer(),
-                    Text("JOIN AXIOM"),
-                    Spacer(),
-                  ]),
-                ),
               ])),
         ]),
       ),
