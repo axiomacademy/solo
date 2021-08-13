@@ -5,10 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../services/auth_service.dart';
-
+import '../models/learner.dart';
 import './register.dart';
+import './home.dart';
 
 /// WelcomePage, redirect to this for unauthneticated user
 class WelcomePage extends StatefulWidget {
@@ -26,6 +29,11 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   final _controller = PageController();
+  final learnerRef =
+      FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
+            fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
+            toFirestore: (learner, _) => learner.toJson(),
+          );
 
   @override
   Widget build(BuildContext context) {
@@ -84,9 +92,17 @@ class _WelcomePageState extends State<WelcomePage> {
                     padding: EdgeInsets.only(top: 20.0),
                     child: ElevatedButton(
                         onPressed: () async {
-                          // User user = await AuthService.signInWithGoogle();
-                          // print(user.email);
-                          Navigator.of(context).push(NamePage.route());
+                          User? user = await AuthService.signInWithGoogle();
+                          print(user?.email);
+                          final learnerQuery = await learnerRef
+                              .where('email', isEqualTo: user?.email)
+                              .get();
+                          if (learnerQuery.size == 1) {
+                            // User already exists
+                            Navigator.of(context).push(HomePage.route());
+                          } else {
+                            Navigator.of(context).push(RegisterPage.route());
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.grey[200],

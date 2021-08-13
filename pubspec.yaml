@@ -39,6 +39,7 @@ dependencies:
   flutter_svg: ^0.22.0
   flutter_spinkit: ^5.0.0
   selectable_container: ^1.0.2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

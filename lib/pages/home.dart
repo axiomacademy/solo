@@ -1,11 +1,95 @@
 import 'package:flutter/material.dart';
 
-class JourneyPage extends StatefulWidget {
-  JourneyPage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => JourneyPage());
+    return MaterialPageRoute<void>(builder: (_) => HomePage());
   }
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  List<Widget> _widgetOptions = <Widget>[
+    ExplorePage(),
+    LogPage(),
+    JourneyPage()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+        child: Scaffold(
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(80.0),
+          child: SafeArea(
+              child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Row(children: <Widget>[
+                    Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 20.0),
+                        decoration: BoxDecoration(
+                            color: Color(0xFFEEE7FA),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        margin: EdgeInsets.only(right: 10.0),
+                        child: Text("🪙 100",
+                            style: Theme.of(context).textTheme.headline6)),
+                    Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 20.0),
+                        decoration: BoxDecoration(
+                            color: Color(0xFFEEE7FA),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        child: Text("⚡100",
+                            style: Theme.of(context).textTheme.headline6)),
+                    Spacer(),
+                    CircleAvatar(backgroundColor: Colors.grey[300])
+                  ])))),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.public),
+            label: 'Explore',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.biotech),
+            label: 'Mission Log',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.face),
+            label: 'Journey',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Theme.of(context).primaryColor,
+        onTap: _onItemTapped,
+      ),
+    ));
+  }
+}
+
+class JourneyPage extends StatefulWidget {
+  JourneyPage({Key? key}) : super(key: key);
 
   @override
   _JourneyPageState createState() => _JourneyPageState();
@@ -199,10 +283,6 @@ class _JourneyPageState extends State<JourneyPage> {
 class LogPage extends StatefulWidget {
   LogPage({Key? key}) : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
-  }
-
   @override
   _LogPageState createState() => _LogPageState();
 }
@@ -368,10 +448,6 @@ class _LogPageState extends State<LogPage> {
 class ExplorePage extends StatefulWidget {
   ExplorePage({Key? key}) : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
-  }
-
   @override
   _ExplorePageState createState() => _ExplorePageState();
 }
@@ -426,93 +502,5 @@ class _ExplorePageState extends State<ExplorePage> {
                                         ?.copyWith(color: Colors.grey[600])),
                               )))),
                     ]))));
-  }
-}
-
-class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
-
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
-  }
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
-  List<Widget> _widgetOptions = <Widget>[
-    ExplorePage(),
-    LogPage(),
-    JourneyPage()
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-        child: Scaffold(
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80.0),
-          child: SafeArea(
-              child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Row(children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        decoration: BoxDecoration(
-                            color: Color(0xFFEEE7FA),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                        margin: EdgeInsets.only(right: 10.0),
-                        child: Text("🪙 100",
-                            style: Theme.of(context).textTheme.headline6)),
-                    Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        decoration: BoxDecoration(
-                            color: Color(0xFFEEE7FA),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                        child: Text("⚡100",
-                            style: Theme.of(context).textTheme.headline6)),
-                    Spacer(),
-                    CircleAvatar(backgroundColor: Colors.grey[300])
-                  ])))),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            label: 'Explore',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.biotech),
-            label: 'Mission Log',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.face),
-            label: 'Journey',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).primaryColor,
-        onTap: _onItemTapped,
-      ),
-    ));
   }
 }

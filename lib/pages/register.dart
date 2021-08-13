@@ -1,14 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:selectable_container/selectable_container.dart';
 
-import './home.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:firebase_auth/firebase_auth.dart';
 
-class EnergyPage extends StatelessWidget {
-  EnergyPage({Key? key}) : super(key: key);
+import '../models/learner.dart';
+import './home.dart';
+import '../theme.dart';
+
+class RegisterPage extends StatefulWidget {
+  RegisterPage({Key? key}) : super(key: key);
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => EnergyPage());
+    return MaterialPageRoute<void>(builder: (_) => RegisterPage());
   }
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Provider<RegisterHandler>(
+        create: (_) => RegisterHandler(),
+        child: MaterialApp(
+          navigatorKey: _navigatorKey,
+          theme: buildTheme(),
+          routes: {
+            '/': (context) => NamePage(),
+            '/motivation': (context) => MotivationPage(),
+            '/motivation/self': (context) => MotivationSelfPage(),
+            '/motivation/career': (context) => MotivationCareerPage(),
+            '/motivation/switch': (context) => MotivationSwitchPage(),
+            '/story': (context) => StoryPage(),
+            '/purpose': (context) => PurposePage(),
+            '/energy': (context) =>
+                EnergyPage(endRegisterFlow: _finishRegistration)
+          },
+        ));
+  }
+
+  void _finishRegistration() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(HomePage.route());
+  }
+}
+
+class RegisterHandler {
+  String _name = 'Learner';
+  String _email = '';
+  String _missionTitle = '';
+  String _missionPurpose = '';
+
+  final learnerRef =
+      FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
+            fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
+            toFirestore: (learner, _) => learner.toJson(),
+          );
+
+  String get getName {
+    return _name;
+  }
+
+  void setName(String name) {
+    _name = name;
+  }
+
+  void setEmail(String email) {
+    _email = email;
+  }
+
+  void setMissionTitle(String missionTitle) {
+    _missionTitle = missionTitle;
+  }
+
+  void setMissionPurpose(String missionPurpose) {
+    _missionPurpose = missionPurpose;
+  }
+
+  Future<void> createUser() async {
+    // Create learner
+    User? user = FirebaseAuth.instance.currentUser!;
+    final learner = await learnerRef.add(
+      Learner(email: user.email!, name: _name, energy: 0, coins: 0),
+    );
+
+    // Create learner missions
+    final missionRef = learner.collection('missions').withConverter<Mission>(
+          fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
+          toFirestore: (mission, _) => mission.toJson(),
+        );
+    await missionRef.add(
+      Mission(title: _missionTitle, purpose: _missionPurpose),
+    );
+  }
+}
+
+class EnergyPage extends StatelessWidget {
+  EnergyPage({Key? key, required this.endRegisterFlow}) : super(key: key);
+
+  final VoidCallback endRegisterFlow;
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +172,11 @@ class EnergyPage extends StatelessWidget {
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(HomePage.route());
+                              onPressed: () async {
+                                Provider.of<RegisterHandler>(context,
+                                        listen: false)
+                                    .createUser();
+                                endRegisterFlow();
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -90,12 +190,15 @@ class EnergyPage extends StatelessWidget {
   }
 }
 
-class PurposePage extends StatelessWidget {
+class PurposePage extends StatefulWidget {
   PurposePage({Key? key}) : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => PurposePage());
-  }
+  @override
+  _PurposePageState createState() => _PurposePageState();
+}
+
+class _PurposePageState extends State<PurposePage> {
+  final _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +245,7 @@ class PurposePage extends StatelessWidget {
                       Container(
                           margin: EdgeInsets.only(top: 30.0),
                           child: TextFormField(
+                            controller: _controller,
                             minLines: 5,
                             maxLines: 5,
                             cursorColor: Theme.of(context).primaryColor,
@@ -170,8 +274,10 @@ class PurposePage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                // Refer to google login and then push
-                                Navigator.of(context).push(EnergyPage.route());
+                                Provider.of<RegisterHandler>(context,
+                                        listen: false)
+                                    .setMissionPurpose(_controller.value.text);
+                                Navigator.of(context).pushNamed('/energy');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -185,12 +291,15 @@ class PurposePage extends StatelessWidget {
   }
 }
 
-class StoryPage extends StatelessWidget {
+class StoryPage extends StatefulWidget {
   StoryPage({Key? key}) : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => StoryPage());
-  }
+  @override
+  _StoryPageState createState() => _StoryPageState();
+}
+
+class _StoryPageState extends State<StoryPage> {
+  final _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +348,7 @@ class StoryPage extends StatelessWidget {
                     Container(
                         margin: EdgeInsets.only(top: 5.0),
                         child: TextFormField(
+                          controller: _controller,
                           cursorColor: Theme.of(context).primaryColor,
                           decoration: InputDecoration(
                             isDense: true,
@@ -265,7 +375,10 @@ class StoryPage extends StatelessWidget {
                         margin: EdgeInsets.only(top: 10.0),
                         child: ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).push(PurposePage.route());
+                              Provider.of<RegisterHandler>(context,
+                                      listen: false)
+                                  .setMissionTitle(_controller.value.text);
+                              Navigator.of(context).pushNamed('/purpose');
                             },
                             style: ElevatedButton.styleFrom(
                               primary: Theme.of(context).primaryColor,
@@ -282,10 +395,6 @@ class StoryPage extends StatelessWidget {
 
 class MotivationSwitchPage extends StatelessWidget {
   MotivationSwitchPage({Key? key}) : super(key: key);
-
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => MotivationSwitchPage());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +431,7 @@ class MotivationSwitchPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).push(StoryPage.route());
+                                Navigator.of(context).pushNamed('/story');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -338,10 +447,6 @@ class MotivationSwitchPage extends StatelessWidget {
 
 class MotivationCareerPage extends StatelessWidget {
   MotivationCareerPage({Key? key}) : super(key: key);
-
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => MotivationCareerPage());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +491,7 @@ class MotivationCareerPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).push(StoryPage.route());
+                                Navigator.of(context).pushNamed('/story');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -402,10 +507,6 @@ class MotivationCareerPage extends StatelessWidget {
 
 class MotivationSelfPage extends StatelessWidget {
   MotivationSelfPage({Key? key}) : super(key: key);
-
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => MotivationSelfPage());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -443,7 +544,7 @@ class MotivationSelfPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).push(StoryPage.route());
+                                Navigator.of(context).pushNamed('/story');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -459,10 +560,6 @@ class MotivationSelfPage extends StatelessWidget {
 
 class MotivationPage extends StatefulWidget {
   MotivationPage({Key? key}) : super(key: key);
-
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => MotivationPage());
-  }
 
   @override
   _MotivationPageState createState() => _MotivationPageState();
@@ -577,16 +674,16 @@ class _MotivationPageState extends State<MotivationPage> {
                               onPressed: () {
                                 if (_select1) {
                                   Navigator.of(context)
-                                      .push(MotivationSelfPage.route());
+                                      .pushNamed('/motivation/self');
                                 } else if (_select2) {
                                   Navigator.of(context)
-                                      .push(MotivationCareerPage.route());
+                                      .pushNamed('/motivation/career');
                                 } else if (_select3) {
                                   Navigator.of(context)
-                                      .push(MotivationSwitchPage.route());
+                                      .pushNamed('/motivation/switch');
                                 } else {
                                   Navigator.of(context)
-                                      .push(MotivationSelfPage.route());
+                                      .pushNamed('/motivation/self');
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -601,9 +698,21 @@ class _MotivationPageState extends State<MotivationPage> {
   }
 }
 
-class NamePage extends StatelessWidget {
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => NamePage());
+class NamePage extends StatefulWidget {
+  NamePage({Key? key}) : super(key: key);
+
+  @override
+  _NamePageState createState() => _NamePageState();
+}
+
+class _NamePageState extends State<NamePage> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -642,6 +751,7 @@ class NamePage extends StatelessWidget {
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
                           child: TextFormField(
+                            controller: _controller,
                             cursorColor: Theme.of(context).primaryColor,
                             decoration: InputDecoration(
                               isDense: true,
@@ -668,8 +778,11 @@ class NamePage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context)
-                                    .push(MotivationPage.route());
+                                // Commit the name to the register state
+                                Provider.of<RegisterHandler>(context,
+                                        listen: false)
+                                    .setName(_controller.value.text);
+                                Navigator.of(context).pushNamed('/motivation');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
