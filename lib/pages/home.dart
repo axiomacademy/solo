@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:firebase_auth/firebase_auth.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../models/learner.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
@@ -13,6 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  late Stream<QuerySnapshot<Learner>> _learnerStream;
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -23,6 +31,22 @@ class _HomePageState extends State<HomePage> {
     JourneyPage()
   ];
 
+  @override
+  void initState() {
+    // Setting up stream from firebase
+    User? user = FirebaseAuth.instance.currentUser;
+    _learnerStream = FirebaseFirestore.instance
+        .collection('learners')
+        .where('email', isEqualTo: user?.email)
+        .withConverter<Learner>(
+          fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
+          toFirestore: (learner, _) => learner.toJson(),
+        )
+        .snapshots();
+
+    super.initState();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -31,60 +55,76 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: Scaffold(
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80.0),
-          child: SafeArea(
-              child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Row(children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        decoration: BoxDecoration(
-                            color: Color(0xFFEEE7FA),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                        margin: EdgeInsets.only(right: 10.0),
-                        child: Text("🪙 100",
-                            style: Theme.of(context).textTheme.headline6)),
-                    Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        decoration: BoxDecoration(
-                            color: Color(0xFFEEE7FA),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                        child: Text("⚡100",
-                            style: Theme.of(context).textTheme.headline6)),
-                    Spacer(),
-                    CircleAvatar(backgroundColor: Colors.grey[300])
-                  ])))),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            label: 'Explore',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.biotech),
-            label: 'Mission Log',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.face),
-            label: 'Journey',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).primaryColor,
-        onTap: _onItemTapped,
-      ),
-    ));
+    return StreamBuilder<QuerySnapshot>(
+        stream: _learnerStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
+          }
+
+          Learner learner = snapshot.data!.docs.single.data() as Learner;
+
+          return Material(
+              child: Scaffold(
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(80.0),
+                child: SafeArea(
+                    child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 10.0),
+                        padding: EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(children: <Widget>[
+                          Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 20.0),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFEEE7FA),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              margin: EdgeInsets.only(right: 10.0),
+                              child: Text("🪙  ${learner.coins}",
+                                  style:
+                                      Theme.of(context).textTheme.headline6)),
+                          Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 20.0),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFEEE7FA),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              child: Text("⚡${learner.energy}",
+                                  style:
+                                      Theme.of(context).textTheme.headline6)),
+                          Spacer(),
+                          CircleAvatar(backgroundColor: Colors.grey[300])
+                        ])))),
+            body: Center(
+              child: _widgetOptions.elementAt(_selectedIndex),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.public),
+                  label: 'Explore',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.biotech),
+                  label: 'Mission Log',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.face),
+                  label: 'Journey',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Theme.of(context).primaryColor,
+              onTap: _onItemTapped,
+            ),
+          ));
+        });
   }
 }
 

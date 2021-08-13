@@ -22,13 +22,13 @@ class Challenge {
   }
 }
 
-class Card {
+class ReviewCard {
   final String topText;
   final String bottomText;
 
-  Card({required this.topText, required this.bottomText});
+  ReviewCard({required this.topText, required this.bottomText});
 
-  Card.fromJson(Map<String, Object?> json)
+  ReviewCard.fromJson(Map<String, Object?> json)
       : topText = json['top_text']! as String,
         bottomText = json['bottom_text']! as String;
 
