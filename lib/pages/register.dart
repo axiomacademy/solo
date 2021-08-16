@@ -87,12 +87,14 @@ class RegisterHandler {
   Future<void> createUser() async {
     // Create learner
     User? user = FirebaseAuth.instance.currentUser!;
-    final learner = await learnerRef.add(
-      Learner(email: user.email!, name: _name, energy: 0, coins: 0),
-    );
+    await learnerRef.doc(user.email).set(
+          Learner(email: user.email!, name: _name, energy: 0, coins: 0),
+        );
 
     // Create learner missions
-    final missionRef = learner.collection('missions').withConverter<Mission>(
+    final missionRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/missions')
+        .withConverter<Mission>(
           fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
           toFirestore: (mission, _) => mission.toJson(),
         );

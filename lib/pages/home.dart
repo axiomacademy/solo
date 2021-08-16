@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/learner.dart';
+import 'progress_log.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -22,9 +23,6 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   late Stream<QuerySnapshot<Learner>> _learnerStream;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
   List<Widget> _widgetOptions = <Widget>[
     ExplorePage(),
     LogPage(),
@@ -34,10 +32,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // Setting up stream from firebase
-    User? user = FirebaseAuth.instance.currentUser;
     _learnerStream = FirebaseFirestore.instance
         .collection('learners')
-        .where('email', isEqualTo: user?.email)
         .withConverter<Learner>(
           fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
           toFirestore: (learner, _) => learner.toJson(),
@@ -136,6 +132,23 @@ class JourneyPage extends StatefulWidget {
 }
 
 class _JourneyPageState extends State<JourneyPage> {
+  late Stream<QuerySnapshot<Mission>> _missionStream;
+
+  @override
+  void initState() {
+    // Setting up stream from firebase
+    User user = FirebaseAuth.instance.currentUser!;
+    _missionStream = FirebaseFirestore.instance
+        .collection('learners/${user.email}/missions')
+        .withConverter<Mission>(
+          fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
+          toFirestore: (mission, _) => mission.toJson(),
+        )
+        .snapshots();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -155,45 +168,78 @@ class _JourneyPageState extends State<JourneyPage> {
                                     .headline5
                                     ?.copyWith(fontSize: 24)),
                           ),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              padding: EdgeInsets.all(30.0),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0),
-                                ),
-                              ),
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Row(children: <Widget>[
-                                      Text("🏗️ Build an app",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6
-                                              ?.copyWith(color: Colors.white)),
-                                      Spacer(),
-                                      Text("54 logs".toUpperCase(),
-                                          style: Theme.of(context)
-                                              .primaryTextTheme
-                                              .overline
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white)),
-                                    ]),
-                                    Container(
-                                        margin: EdgeInsets.only(top: 10.0),
-                                        child: Text(
-                                          "I want to build an app to kickstart my programming career",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1
-                                              ?.copyWith(color: Colors.white),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ))
-                                  ])),
+                          StreamBuilder<QuerySnapshot>(
+                              stream: _missionStream,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text('Something went wrong');
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text("Loading");
+                                }
+
+                                return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: snapshot.data!.docs
+                                        .map((DocumentSnapshot document) {
+                                      Mission mission =
+                                          document.data()! as Mission;
+                                      return Container(
+                                          margin: EdgeInsets.only(top: 10.0),
+                                          padding: EdgeInsets.all(30.0),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(15.0),
+                                            ),
+                                          ),
+                                          child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Row(children: <Widget>[
+                                                  Text(mission.title,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .headline6
+                                                          ?.copyWith(
+                                                              color: Colors
+                                                                  .white)),
+                                                  Spacer(),
+                                                  Text("54 logs".toUpperCase(),
+                                                      style: Theme.of(context)
+                                                          .primaryTextTheme
+                                                          .overline
+                                                          ?.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: Colors
+                                                                  .white)),
+                                                ]),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: 10.0),
+                                                    child: Text(
+                                                      mission.purpose,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyText1
+                                                          ?.copyWith(
+                                                              color:
+                                                                  Colors.white),
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ))
+                                              ]));
+                                    }).toList());
+                              }),
                           Container(
                             margin: EdgeInsets.only(top: 20.0),
                             child: Text("Recent Activity",
@@ -418,20 +464,26 @@ class _LogPageState extends State<LogPage> {
             margin: EdgeInsets.only(top: 10.0),
             child: Row(children: <Widget>[
               Expanded(
-                  child: Container(
-                      height: 50,
-                      margin: EdgeInsets.all(5.0),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
-                        ),
-                      ),
-                      child: Center(
-                          child: Text("🤔 Recall",
-                              style: Theme.of(context).textTheme.subtitle1)))),
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(ProgressLogPage.route());
+                      },
+                      child: Container(
+                          height: 50,
+                          margin: EdgeInsets.all(5.0),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
+                          ),
+                          child: Center(
+                              child: Text("🤔 Recall",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1))))),
               Expanded(
                   child: Container(
                       height: 50,
