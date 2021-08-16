@@ -25,15 +25,17 @@ class _ProgressLogPageState extends State<ProgressLogPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      theme: buildTheme(),
-      routes: {
-        '/': (context) => MissionSelectView(),
-        '/level': (context) => ProgressLevelView(),
-        '/text': (context) => ProgressTextView(endLogFlow: _finishLog)
-      },
-    );
+    return Provider<ProgressLogHandler>(
+        create: (_) => ProgressLogHandler(),
+        child: MaterialApp(
+          navigatorKey: _navigatorKey,
+          theme: buildTheme(),
+          routes: {
+            '/': (context) => MissionSelectView(),
+            '/level': (context) => ProgressLevelView(),
+            '/text': (context) => ProgressTextView(endLogFlow: _finishLog)
+          },
+        ));
   }
 
   void _finishLog() {
@@ -66,6 +68,18 @@ class ProgressLogHandler {
 
   Future<void> createLog() async {
     User? user = FirebaseAuth.instance.currentUser!;
+    final logRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/logs')
+        .withConverter<Log>(
+          fromFirestore: (snapshot, _) => Log.fromJson(snapshot.data()!),
+          toFirestore: (log, _) => log.toJson(),
+        );
+
+    await logRef.add(Log(
+        type: 'progress',
+        mission: _missionId,
+        progressLevel: _level,
+        progressLog: _text));
   }
 }
 
@@ -153,7 +167,11 @@ class _ProgressTextViewState extends State<ProgressTextView> {
                       Container(
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                Provider.of<ProgressLogHandler>(context)
+                                    .setText(_controller.value.text);
+                                await Provider.of<ProgressLogHandler>(context)
+                                    .createLog();
                                 widget.endLogFlow();
                               },
                               style: ElevatedButton.styleFrom(
@@ -359,6 +377,8 @@ class _ProgressLevelViewState extends State<ProgressLevelView> {
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
                               onPressed: () {
+                                Provider.of<ProgressLogHandler>(context)
+                                    .setLevel(selected);
                                 Navigator.of(context).pushNamed('/text');
                               },
                               style: ElevatedButton.styleFrom(
@@ -462,6 +482,8 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                   return GestureDetector(
                                       onTap: () {
                                         // Figure out how store ID
+                                        Provider.of<ProgressLogHandler>(context)
+                                            .setMissionId(document.id);
                                         Navigator.of(context)
                                             .pushNamed('/level');
                                       },

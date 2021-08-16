@@ -1,3 +1,30 @@
+class Log {
+  final String type;
+  final String mission;
+  final int progressLevel;
+  final String? progressLog;
+
+  Log(
+      {required this.type,
+      required this.progressLevel,
+      required this.mission,
+      this.progressLog});
+
+  Log.fromJson(Map<String, Object?> json)
+      : type = json['type']! as String,
+        mission = json['mission']! as String,
+        progressLevel = json['progress_level']! as int,
+        progressLog = json['progress_log'] as String?;
+
+  Map<String, Object?> toJson() {
+    return {
+      'type': type,
+      'progress_level': progressLevel,
+      'progress_log': progressLog,
+    };
+  }
+}
+
 class Challenge {
   final String title;
   final String description;
