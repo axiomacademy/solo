@@ -32,8 +32,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // Setting up stream from firebase
+    User user = FirebaseAuth.instance.currentUser!;
     _learnerStream = FirebaseFirestore.instance
         .collection('learners')
+        .where('email', isEqualTo: user.email)
         .withConverter<Learner>(
           fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
           toFirestore: (learner, _) => learner.toJson(),

@@ -168,9 +168,11 @@ class _ProgressTextViewState extends State<ProgressTextView> {
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
                               onPressed: () async {
-                                Provider.of<ProgressLogHandler>(context)
+                                Provider.of<ProgressLogHandler>(context,
+                                        listen: false)
                                     .setText(_controller.value.text);
-                                await Provider.of<ProgressLogHandler>(context)
+                                await Provider.of<ProgressLogHandler>(context,
+                                        listen: false)
                                     .createLog();
                                 widget.endLogFlow();
                               },
@@ -377,7 +379,8 @@ class _ProgressLevelViewState extends State<ProgressLevelView> {
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Provider.of<ProgressLogHandler>(context)
+                                Provider.of<ProgressLogHandler>(context,
+                                        listen: false)
                                     .setLevel(selected);
                                 Navigator.of(context).pushNamed('/text');
                               },
@@ -482,7 +485,8 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                   return GestureDetector(
                                       onTap: () {
                                         // Figure out how store ID
-                                        Provider.of<ProgressLogHandler>(context)
+                                        Provider.of<ProgressLogHandler>(context,
+                                                listen: false)
                                             .setMissionId(document.id);
                                         Navigator.of(context)
                                             .pushNamed('/level');
