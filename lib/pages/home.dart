@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/learner.dart';
 import 'progress_log.dart';
+import 'challenge_log.dart';
+import 'recall_log.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -468,7 +470,7 @@ class _LogPageState extends State<LogPage> {
               Expanded(
                   child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(ProgressLogPage.route());
+                        Navigator.of(context).push(RecallLogPage.route());
                       },
                       child: Container(
                           height: 50,
@@ -482,16 +484,43 @@ class _LogPageState extends State<LogPage> {
                             ),
                           ),
                           child: Center(
-                              child: Text("🤔 Recall",
+                              child: Text("🧠 Content",
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1))))),
               Expanded(
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(ChallengeLogPage.route());
+                    },
+                    child: Container(
+                        height: 50,
+                        padding: EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 10.0),
+                        margin: EdgeInsets.all(5.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
+                        ),
+                        child: Center(
+                            child: Text("🥊 Challenge",
+                                style:
+                                    Theme.of(context).textTheme.subtitle1)))),
+              )
+            ])),
+        Row(children: <Widget>[
+          Expanded(
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(ProgressLogPage.route());
+                  },
                   child: Container(
                       height: 50,
+                      margin: EdgeInsets.all(5.0),
                       padding:
                           EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                      margin: EdgeInsets.all(5.0),
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
                         borderRadius: BorderRadius.all(
@@ -499,40 +528,26 @@ class _LogPageState extends State<LogPage> {
                         ),
                       ),
                       child: Center(
-                          child: Text("🥊 Challenge",
-                              style: Theme.of(context).textTheme.subtitle1)))),
-            ])),
-        Row(children: <Widget>[
+                          child: Text("🔥 Progress",
+                              style: Theme.of(context).textTheme.subtitle1))))),
           Expanded(
-              child: Container(
-                  height: 50,
-                  margin: EdgeInsets.all(5.0),
-                  padding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
+            child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                    height: 50,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                    margin: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
                     ),
-                  ),
-                  child: Center(
-                      child: Text("🔥 Progress",
-                          style: Theme.of(context).textTheme.subtitle1)))),
-          Expanded(
-              child: Container(
-                  height: 50,
-                  padding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                  margin: EdgeInsets.all(5.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Center(
-                      child: Text("🧠 Cards",
-                          style: Theme.of(context).textTheme.subtitle1)))),
+                    child: Center(
+                        child: Text("🧠 Cards",
+                            style: Theme.of(context).textTheme.subtitle1)))),
+          )
         ])
       ]),
     ))));
