@@ -5,7 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../models/learner.dart';
+// Components
+import '../components/log_element.dart';
+
+import '../models/models.dart';
 import 'progress_log.dart';
 import 'challenge_log.dart';
 import 'recall_log.dart';
@@ -137,16 +140,31 @@ class JourneyPage extends StatefulWidget {
 
 class _JourneyPageState extends State<JourneyPage> {
   late Stream<QuerySnapshot<Mission>> _missionStream;
+  late Stream<QuerySnapshot<Log>> _logStream;
+  late CollectionReference<Mission> _missionRef;
 
   @override
   void initState() {
     // Setting up stream from firebase
     User user = FirebaseAuth.instance.currentUser!;
+    _missionRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/missions')
+        .withConverter<Mission>(
+          fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
+          toFirestore: (mission, _) => mission.toJson(),
+        );
     _missionStream = FirebaseFirestore.instance
         .collection('learners/${user.email}/missions')
         .withConverter<Mission>(
           fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
           toFirestore: (mission, _) => mission.toJson(),
+        )
+        .snapshots();
+    _logStream = FirebaseFirestore.instance
+        .collection('learners/${user.email}/logs')
+        .withConverter<Log>(
+          fromFirestore: (snapshot, _) => Log.fromJson(snapshot.data()!),
+          toFirestore: (log, _) => log.toJson(),
         )
         .snapshots();
 
@@ -161,8 +179,8 @@ class _JourneyPageState extends State<JourneyPage> {
                 child: Container(
                     padding: EdgeInsets.all(30.0),
                     child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Container(
                             margin: EdgeInsets.only(top: 20.0),
@@ -172,78 +190,7 @@ class _JourneyPageState extends State<JourneyPage> {
                                     .headline5
                                     ?.copyWith(fontSize: 24)),
                           ),
-                          StreamBuilder<QuerySnapshot>(
-                              stream: _missionStream,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (snapshot.hasError) {
-                                  return Text('Something went wrong');
-                                }
-
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Text("Loading");
-                                }
-
-                                return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: snapshot.data!.docs
-                                        .map((DocumentSnapshot document) {
-                                      Mission mission =
-                                          document.data()! as Mission;
-                                      return Container(
-                                          margin: EdgeInsets.only(top: 10.0),
-                                          padding: EdgeInsets.all(30.0),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(15.0),
-                                            ),
-                                          ),
-                                          child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Row(children: <Widget>[
-                                                  Text(mission.title,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline6
-                                                          ?.copyWith(
-                                                              color: Colors
-                                                                  .white)),
-                                                  Spacer(),
-                                                  Text("54 logs".toUpperCase(),
-                                                      style: Theme.of(context)
-                                                          .primaryTextTheme
-                                                          .overline
-                                                          ?.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: Colors
-                                                                  .white)),
-                                                ]),
-                                                Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 10.0),
-                                                    child: Text(
-                                                      mission.purpose,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1
-                                                          ?.copyWith(
-                                                              color:
-                                                                  Colors.white),
-                                                      maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ))
-                                              ]));
-                                    }).toList());
-                              }),
+                          _buildMissions(),
                           Container(
                             margin: EdgeInsets.only(top: 20.0),
                             child: Text("Recent Activity",
@@ -252,121 +199,108 @@ class _JourneyPageState extends State<JourneyPage> {
                                     .headline5
                                     ?.copyWith(fontSize: 24)),
                           ),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              padding: EdgeInsets.all(30.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0),
-                                ),
-                              ),
-                              child: Row(children: <Widget>[
-                                Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text("React Basics",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6),
-                                      Container(
-                                          child: Text("🏗️ Build an app",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle1))
-                                    ]),
-                                Spacer(),
-                                Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 20.0),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFFEEE7FA),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0))),
-                                    child: Text("🤔 Recall",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1)),
-                              ])),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              padding: EdgeInsets.all(30.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0),
-                                ),
-                              ),
-                              child: Row(children: <Widget>[
-                                Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text("Progress on App",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6),
-                                      Container(
-                                          child: Text("🏗️ Build an app",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle1))
-                                    ]),
-                                Spacer(),
-                                Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 20.0),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFFEEE7FA),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0))),
-                                    child: Text("🔥 Progress",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1)),
-                              ])),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              padding: EdgeInsets.all(30.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0),
-                                ),
-                              ),
-                              child: Row(children: <Widget>[
-                                Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text("Draw a Boat",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6),
-                                      Container(
-                                          child: Text("🏗️ Build an app",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle1))
-                                    ]),
-                                Spacer(),
-                                Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 20.0),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFFEEE7FA),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0))),
-                                    child: Text("🥊 Challenge",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1)),
-                              ])),
+                          _buildLogActivity(),
                         ])))));
+  }
+
+  Widget _buildLogActivity() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: _logStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
+          }
+
+          return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                Log log = document.data()! as Log;
+
+                return FutureBuilder<DocumentSnapshot>(
+                    future: _missionRef.doc(log.mission).get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text("Something went wrong");
+                      }
+
+                      if (snapshot.hasData && !snapshot.data!.exists) {
+                        return Text("Document does not exist");
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        Mission mission = snapshot.data!.data() as Mission;
+                        return LogElement(log: log, mission: mission);
+                      }
+
+                      return Container();
+                    });
+              }).toList());
+        });
+  }
+
+  Widget _buildMissions() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: _missionStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
+          }
+
+          return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                Mission mission = document.data()! as Mission;
+                return Container(
+                    margin: EdgeInsets.only(top: 10.0),
+                    padding: EdgeInsets.all(30.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15.0),
+                      ),
+                    ),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Text(mission.title,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    ?.copyWith(color: Colors.white)),
+                            Spacer(),
+                            Text("54 logs".toUpperCase(),
+                                style: Theme.of(context)
+                                    .primaryTextTheme
+                                    .overline
+                                    ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white)),
+                          ]),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: Text(
+                                mission.purpose,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    ?.copyWith(color: Colors.white),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ))
+                        ]));
+              }).toList());
+        });
   }
 }
 
@@ -378,6 +312,30 @@ class LogPage extends StatefulWidget {
 }
 
 class _LogPageState extends State<LogPage> {
+  late Stream<QuerySnapshot<Challenge>> _challengeStream;
+  late CollectionReference<Mission> _missionRef;
+
+  @override
+  void initState() {
+    // Setting up stream from firebase
+    User user = FirebaseAuth.instance.currentUser!;
+    _missionRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/missions')
+        .withConverter<Mission>(
+          fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
+          toFirestore: (mission, _) => mission.toJson(),
+        );
+    _challengeStream = FirebaseFirestore.instance
+        .collection('learners/${user.email}/challenges')
+        .withConverter<Challenge>(
+          fromFirestore: (snapshot, _) => Challenge.fromJson(snapshot.data()!),
+          toFirestore: (challenge, _) => challenge.toJson(),
+        )
+        .snapshots();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -423,39 +381,81 @@ class _LogPageState extends State<LogPage> {
         SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.only(top: 10.0),
-            child: Row(children: <Widget>[
-              Container(
-                  width: 300,
-                  height: 160,
-                  padding: EdgeInsets.all(20.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text("✨ Draw a boot",
-                            style: Theme.of(context).textTheme.headline5),
-                        Container(
-                            margin: EdgeInsets.only(top: 5.0),
-                            child: Text("Mission: Draw a figure",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .subtitle1
-                                    ?.copyWith(color: Colors.grey[500]))),
-                        Container(
-                            margin: EdgeInsets.only(top: 10.0),
-                            child: Text(
-                                "Follow the Udemy course and draw a boot to practice contour and cross contour lines",
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodyText2))
-                      ])),
-            ])),
+            child: StreamBuilder<QuerySnapshot>(
+                stream: _challengeStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text("Loading");
+                  }
+
+                  return Row(
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                    Challenge challenge = document.data()! as Challenge;
+
+                    return FutureBuilder<DocumentSnapshot>(
+                        future: _missionRef.doc(challenge.mission).get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text("Something went wrong");
+                          }
+
+                          if (snapshot.hasData && !snapshot.data!.exists) {
+                            return Text("Document does not exist");
+                          }
+
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            Mission mission = snapshot.data!.data() as Mission;
+                            return Container(
+                                width: 300,
+                                height: 160,
+                                padding: EdgeInsets.all(20.0),
+                                margin: EdgeInsets.only(right: 10.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(challenge.title,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5),
+                                      Container(
+                                          margin: EdgeInsets.only(top: 5.0),
+                                          child: Text(mission.title,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1
+                                                  ?.copyWith(
+                                                      color:
+                                                          Colors.grey[500]))),
+                                      Container(
+                                          margin: EdgeInsets.only(top: 10.0),
+                                          child: Text(challenge.description,
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2))
+                                    ]));
+                          }
+                          return Container();
+                        });
+                  }).toList());
+                })),
         Container(
           margin: EdgeInsets.only(top: 20.0),
           child: Text("Logging",
@@ -470,7 +470,7 @@ class _LogPageState extends State<LogPage> {
               Expanded(
                   child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(RecallLogPage.route());
+                        Navigator.of(context).push(ContentLogPage.route());
                       },
                       child: Container(
                           height: 50,
@@ -545,7 +545,7 @@ class _LogPageState extends State<LogPage> {
                       ),
                     ),
                     child: Center(
-                        child: Text("🧠 Cards",
+                        child: Text("🃏 Cards",
                             style: Theme.of(context).textTheme.subtitle1)))),
           )
         ])

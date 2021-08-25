@@ -25,18 +25,59 @@ class _ChallengeLogPageState extends State<ChallengeLogPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      theme: buildTheme(),
-      routes: {
-        '/': (context) => ChallengeCreateView(),
-      },
-    );
+    return Provider<ChallengeHandler>(
+        create: (_) => ChallengeHandler(),
+        child: MaterialApp(
+          navigatorKey: _navigatorKey,
+          theme: buildTheme(),
+          routes: {
+            '/': (context) => MissionSelectView(),
+            '/challenge': (context) =>
+                ChallengeCreateView(endLogFlow: _finishLog),
+          },
+        ));
+  }
+
+  void _finishLog() {
+    Navigator.of(context).pop();
+  }
+}
+
+class ChallengeHandler {
+  String _missionId = '';
+  String _title = '';
+  String _description = '';
+
+  void setMissionId(String id) {
+    _missionId = id;
+  }
+
+  void setChallengeParameters(String title, String description) {
+    _title = title;
+    _description = description;
+  }
+
+  Future<void> createChallenge() async {
+    User? user = FirebaseAuth.instance.currentUser!;
+    final logRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/challenges')
+        .withConverter<Challenge>(
+          fromFirestore: (snapshot, _) => Challenge.fromJson(snapshot.data()!),
+          toFirestore: (challenge, _) => challenge.toJson(),
+        );
+
+    await logRef.add(Challenge(
+        mission: _missionId,
+        title: _title,
+        description: _description,
+        completed: false));
   }
 }
 
 class ChallengeCreateView extends StatefulWidget {
-  ChallengeCreateView({Key? key}) : super(key: key);
+  ChallengeCreateView({Key? key, required this.endLogFlow}) : super(key: key);
+
+  final VoidCallback endLogFlow;
 
   @override
   _ChallengeCreateViewState createState() => _ChallengeCreateViewState();
@@ -147,7 +188,17 @@ class _ChallengeCreateViewState extends State<ChallengeCreateView> {
                       Container(
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                Provider.of<ChallengeHandler>(context,
+                                        listen: false)
+                                    .setChallengeParameters(
+                                        _titleController.value.text,
+                                        _descriptionController.value.text);
+                                await Provider.of<ChallengeHandler>(context,
+                                        listen: false)
+                                    .createChallenge();
+                                widget.endLogFlow();
+                              },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
                               ),
@@ -240,9 +291,12 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                   Mission mission = document.data()! as Mission;
                                   return GestureDetector(
                                       onTap: () {
+                                        Provider.of<ChallengeHandler>(context,
+                                                listen: false)
+                                            .setMissionId(document.id);
                                         // Figure out how store ID
                                         Navigator.of(context)
-                                            .pushNamed('/level');
+                                            .pushNamed('/challenge');
                                       },
                                       child: Container(
                                           margin: EdgeInsets.only(top: 10.0),

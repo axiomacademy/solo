@@ -48,12 +48,6 @@ class ProgressLogHandler {
   int _level = 0;
   String _text = '';
 
-  final learnerRef =
-      FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
-            fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
-            toFirestore: (learner, _) => learner.toJson(),
-          );
-
   void setMissionId(String id) {
     _missionId = id;
   }

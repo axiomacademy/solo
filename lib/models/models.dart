@@ -1,50 +1,65 @@
-class Log {
-  final String type;
+class Challenge {
   final String mission;
-  final int progressLevel;
-  final String? progressLog;
+  final String title;
+  final String description;
+  final bool completed;
 
-  Log(
-      {required this.type,
-      required this.progressLevel,
-      required this.mission,
-      this.progressLog});
+  Challenge(
+      {required this.mission,
+      required this.title,
+      required this.description,
+      required this.completed});
 
-  Log.fromJson(Map<String, Object?> json)
-      : type = json['type']! as String,
-        mission = json['mission']! as String,
-        progressLevel = json['progress_level']! as int,
-        progressLog = json['progress_log'] as String?;
+  Challenge.fromJson(Map<String, Object?> json)
+      : mission = json['mission']! as String,
+        title = json['title']! as String,
+        description = json['description']! as String,
+        completed = json['completed']! as bool;
 
   Map<String, Object?> toJson() {
     return {
-      'type': type,
-      'progress_level': progressLevel,
-      'progress_log': progressLog,
+      'mission': mission,
+      'title': title,
+      'description': description,
+      'completed': completed
     };
   }
 }
 
-class Challenge {
-  final String title;
-  final String description;
-  final String missionId;
+class Log {
+  final String type;
+  final String mission;
 
-  Challenge(
-      {required this.title,
-      required this.description,
-      required this.missionId});
+  final int? progressLevel;
+  final String? progressLog;
 
-  Challenge.fromJson(Map<String, Object?> json)
-      : title = json['title']! as String,
-        description = json['description']! as String,
-        missionId = json['mission_id']! as String;
+  final String? contentTitle;
+  final String? contentReview;
+
+  Log(
+      {required this.type,
+      required this.mission,
+      this.progressLevel,
+      this.progressLog,
+      this.contentTitle,
+      this.contentReview});
+
+  Log.fromJson(Map<String, Object?> json)
+      : type = json['type']! as String,
+        mission = json['mission']! as String,
+        progressLevel = json['progress_level'] as int?,
+        progressLog = json['progress_log'] as String?,
+        contentTitle = json['content_title'] as String?,
+        contentReview = json['content_review'] as String?;
 
   Map<String, Object?> toJson() {
     return {
-      'title': title,
-      'description': description,
-      'mission_id': missionId,
+      'type': type,
+      'mission': mission,
+      'progress_level': progressLevel,
+      'progress_log': progressLog,
+      'content_title': contentTitle,
+      'content_review': contentReview,
     };
   }
 }

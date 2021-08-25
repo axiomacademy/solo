@@ -9,34 +9,84 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/learner.dart';
 import '../theme.dart';
 
-class RecallLogPage extends StatefulWidget {
-  RecallLogPage({Key? key}) : super(key: key);
+class ContentLogPage extends StatefulWidget {
+  ContentLogPage({Key? key}) : super(key: key);
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => RecallLogPage());
+    return MaterialPageRoute<void>(builder: (_) => ContentLogPage());
   }
 
   @override
-  _RecallLogPageState createState() => _RecallLogPageState();
+  _ContentLogPageState createState() => _ContentLogPageState();
 }
 
-class _RecallLogPageState extends State<RecallLogPage> {
+class _ContentLogPageState extends State<ContentLogPage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      theme: buildTheme(),
-      routes: {
-        '/': (context) => MissionSelectView(),
-      },
-    );
+    return Provider<ContentLogHandler>(
+        create: (_) => ContentLogHandler(),
+        child: MaterialApp(
+          navigatorKey: _navigatorKey,
+          theme: buildTheme(),
+          routes: {
+            '/': (context) => MissionSelectView(),
+            '/content': (context) => ContentView(),
+            '/review': (context) => ReviewView(endLogFlow: _finishLog),
+          },
+        ));
+  }
+
+  void _finishLog() {
+    Navigator.of(context).pop();
+  }
+}
+
+class ContentLogHandler {
+  String _missionId = '';
+  String _content = '';
+  String _review = '';
+
+  final learnerRef =
+      FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
+            fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
+            toFirestore: (learner, _) => learner.toJson(),
+          );
+
+  void setMissionId(String id) {
+    _missionId = id;
+  }
+
+  void setContentTitle(String content) {
+    _content = content;
+  }
+
+  void setReview(String review) {
+    _review = review;
+  }
+
+  Future<void> createLog() async {
+    User? user = FirebaseAuth.instance.currentUser!;
+    final logRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/logs')
+        .withConverter<Log>(
+          fromFirestore: (snapshot, _) => Log.fromJson(snapshot.data()!),
+          toFirestore: (log, _) => log.toJson(),
+        );
+
+    await logRef.add(Log(
+        type: 'content',
+        mission: _missionId,
+        contentTitle: _content,
+        contentReview: _review));
   }
 }
 
 class ReviewView extends StatefulWidget {
-  ReviewView({Key? key}) : super(key: key);
+  ReviewView({Key? key, required this.endLogFlow}) : super(key: key);
+
+  final VoidCallback endLogFlow;
 
   @override
   _ReviewViewState createState() => _ReviewViewState();
@@ -89,7 +139,7 @@ class _ReviewViewState extends State<ReviewView> {
                                   ?.copyWith(height: 1.15))),
                       Expanded(
                           child: Container(
-                              margin: EdgeInsets.only(top: 20.0),
+                              margin: EdgeInsets.only(top: 10.0),
                               child: TextFormField(
                                 controller: _controller,
                                 style: Theme.of(context)
@@ -106,7 +156,7 @@ class _ReviewViewState extends State<ReviewView> {
                                           Radius.circular(10.0))),
                                   hintMaxLines: 10,
                                   hintText:
-                                      "Wow you've learnt some new stuff! The best way to ensure you don't foget what you've learnt is to practice free recall. Write down everything you remember here, it doesn't matter if you've forgotten some of it!\n\n Use bullet points or write in full sentences, it doesn't matter. Soon, you'll be a recollection superstar",
+                                      "Wow you've learnt some new stuff! The best way to ensure you don't foget what you've learnt is to practice free recall. Write down everything you remember here, it doesn't matter if you've forgotten some of it!\n\nUse bullet points or write in full sentences, it doesn't matter.\n\nSoon, you'll be a recollection superstar!",
                                   hintStyle: Theme.of(context)
                                       .textTheme
                                       .subtitle1
@@ -117,7 +167,15 @@ class _ReviewViewState extends State<ReviewView> {
                       Container(
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
-                              onPressed: () async {},
+                              onPressed: () async {
+                                Provider.of<ContentLogHandler>(context,
+                                        listen: false)
+                                    .setReview(_controller.value.text);
+                                await Provider.of<ContentLogHandler>(context,
+                                        listen: false)
+                                    .createLog();
+                                widget.endLogFlow();
+                              },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
                               ),
@@ -196,7 +254,7 @@ class _ContentViewState extends State<ContentView> {
                           child: Text("What did you just learn 😎",
                               style: Theme.of(context).textTheme.headline6)),
                       Container(
-                          margin: EdgeInsets.only(top: 30.0),
+                          margin: EdgeInsets.only(top: 0.0),
                           child: TextFormField(
                             controller: _controller,
                             cursorColor: Theme.of(context).primaryColor,
@@ -224,7 +282,12 @@ class _ContentViewState extends State<ContentView> {
                       Container(
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Provider.of<ContentLogHandler>(context,
+                                        listen: false)
+                                    .setContentTitle(_controller.value.text);
+                                Navigator.of(context).pushNamed('/review');
+                              },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
                               ),
@@ -317,9 +380,12 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                   Mission mission = document.data()! as Mission;
                                   return GestureDetector(
                                       onTap: () {
+                                        Provider.of<ContentLogHandler>(context,
+                                                listen: false)
+                                            .setMissionId(document.id);
                                         // Figure out how store ID
                                         Navigator.of(context)
-                                            .pushNamed('/level');
+                                            .pushNamed('/content');
                                       },
                                       child: Container(
                                           margin: EdgeInsets.only(top: 10.0),
