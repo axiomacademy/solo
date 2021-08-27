@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../models/learner.dart';
+import '../models/models.dart';
 import '../theme.dart';
 
 class ContentLogPage extends StatefulWidget {
@@ -47,12 +47,6 @@ class ContentLogHandler {
   String _missionId = '';
   String _content = '';
   String _review = '';
-
-  final learnerRef =
-      FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
-            fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
-            toFirestore: (learner, _) => learner.toJson(),
-          );
 
   void setMissionId(String id) {
     _missionId = id;

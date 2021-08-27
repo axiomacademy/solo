@@ -9,7 +9,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../services/auth_service.dart';
-import '../models/learner.dart';
+import '../models/models.dart';
 import './register.dart';
 import './home.dart';
 

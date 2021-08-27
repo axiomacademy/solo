@@ -12,6 +12,7 @@ import '../models/models.dart';
 import 'progress_log.dart';
 import 'challenge_log.dart';
 import 'recall_log.dart';
+import 'challenge_complete.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -413,44 +414,51 @@ class _LogPageState extends State<LogPage> {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             Mission mission = snapshot.data!.data() as Mission;
-                            return Container(
-                                width: 300,
-                                height: 160,
-                                padding: EdgeInsets.all(20.0),
-                                margin: EdgeInsets.only(right: 10.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
-                                ),
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text(challenge.title,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline5),
-                                      Container(
-                                          margin: EdgeInsets.only(top: 5.0),
-                                          child: Text(mission.title,
+                            return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .push(ChallengeCompleteLogPage.route());
+                                },
+                                child: Container(
+                                    width: 300,
+                                    height: 160,
+                                    padding: EdgeInsets.all(20.0),
+                                    margin: EdgeInsets.only(right: 10.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[100],
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(challenge.title,
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .subtitle1
-                                                  ?.copyWith(
-                                                      color:
-                                                          Colors.grey[500]))),
-                                      Container(
-                                          margin: EdgeInsets.only(top: 10.0),
-                                          child: Text(challenge.description,
-                                              maxLines: 3,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText2))
-                                    ]));
+                                                  .headline5),
+                                          Container(
+                                              margin: EdgeInsets.only(top: 5.0),
+                                              child: Text(mission.title,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle1
+                                                      ?.copyWith(
+                                                          color: Colors
+                                                              .grey[500]))),
+                                          Container(
+                                              margin:
+                                                  EdgeInsets.only(top: 10.0),
+                                              child: Text(challenge.description,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2))
+                                        ])));
                           }
                           return Container();
                         });
