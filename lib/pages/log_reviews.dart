@@ -2,6 +2,67 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 
+class ChallengeLogReview extends StatelessWidget {
+  final Log log;
+  final Mission mission;
+
+  ChallengeLogReview(
+      {Key? key, required Log this.log, required Mission this.mission})
+      : super(key: key);
+
+  static Route route(Log log, Mission mission) {
+    return MaterialPageRoute<void>(
+        builder: (_) => ChallengeLogReview(log: log, mission: mission));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+        child: SafeArea(
+            child: Container(
+                padding: EdgeInsets.all(30.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(children: <Widget>[
+                        IconButton(
+                            icon: Icon(Icons.arrow_back, size: 50.0),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }),
+                      ]),
+                      Container(
+                          padding: EdgeInsets.only(top: 20.0),
+                          child: Text(log.challengeTitle!,
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .headline2
+                                  ?.copyWith(height: 1.15))),
+                      Container(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text(log.challengeDescription!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(height: 1.15))),
+                      Container(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Mission: ${mission.title}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(height: 1.15))),
+                      Container(
+                          padding: EdgeInsets.only(top: 20.0),
+                          child: Text(log.challengeText!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  ?.copyWith(height: 1.6))),
+                    ]))));
+  }
+}
+
 class ContentLogReview extends StatelessWidget {
   final Log log;
   final Mission mission;

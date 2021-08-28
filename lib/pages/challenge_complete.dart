@@ -10,10 +10,16 @@ import '../models/models.dart';
 import '../theme.dart';
 
 class ChallengeCompleteLogPage extends StatefulWidget {
-  ChallengeCompleteLogPage({Key? key}) : super(key: key);
+  ChallengeCompleteLogPage(
+      {Key? key, required this.challenge, required this.id})
+      : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => ChallengeCompleteLogPage());
+  final Challenge challenge;
+  final String id;
+
+  static Route route(Challenge challenge, String id) {
+    return MaterialPageRoute<void>(
+        builder: (_) => ChallengeCompleteLogPage(challenge: challenge, id: id));
   }
 
   @override
@@ -26,18 +32,56 @@ class _ChallengeCompleteLogPageState extends State<ChallengeCompleteLogPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      theme: buildTheme(),
-      routes: {
-        '/': (context) => ChallengeCompleteView(endLogFlow: _finishLog),
-        '/log': (context) => ChallengeTextView(endLogFlow: _finishLog),
-      },
-    );
+    return Provider<ChallengeCompleteHandler>(
+        create: (_) => ChallengeCompleteHandler(widget.challenge, widget.id),
+        child: MaterialApp(
+          navigatorKey: _navigatorKey,
+          theme: buildTheme(),
+          routes: {
+            '/': (context) => ChallengeCompleteView(endLogFlow: _finishLog),
+            '/log': (context) => ChallengeTextView(endLogFlow: _finishLog),
+          },
+        ));
   }
 
   void _finishLog() {
     Navigator.of(context).pop();
+  }
+}
+
+class ChallengeCompleteHandler {
+  final Challenge challenge;
+  final String id;
+  String _text = '';
+
+  ChallengeCompleteHandler(this.challenge, this.id);
+
+  void setChallengeText(String text) {
+    _text = text;
+  }
+
+  Future<void> createLog() async {
+    User? user = FirebaseAuth.instance.currentUser!;
+    final logRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/logs')
+        .withConverter<Log>(
+          fromFirestore: (snapshot, _) => Log.fromJson(snapshot.data()!),
+          toFirestore: (log, _) => log.toJson(),
+        );
+
+    await logRef.add(Log(
+        type: 'challenge',
+        mission: challenge.mission,
+        challengeTitle: challenge.title,
+        challengeDescription: challenge.description,
+        challengeText: _text));
+
+    print(id);
+
+    await FirebaseFirestore.instance
+        .collection('learners/${user.email}/challenges')
+        .doc(id)
+        .delete();
   }
 }
 
@@ -79,18 +123,10 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(3.0)),
                                     color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
                       ]),
                       Container(
                           padding: EdgeInsets.only(top: 50.0),
-                          child: Text("Show off your progress 🚀",
+                          child: Text("Talk about your challenge 💪",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline2
@@ -114,7 +150,7 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
                                           Radius.circular(10.0))),
                                   hintMaxLines: 10,
                                   hintText:
-                                      "You've come so far! Time to brag a little, tell us what you've done. Talk about how your learning strategies are working, and whether changes need to be made.\n\n* I learnt...\n* I think this should be done better by...",
+                                      "You crushed it! Talk about how you did your challenge and add in any pictures of your work. This is super useful when you look back and monitor your progress.\n\n* I drew this...\n* Attach photo",
                                   hintStyle: Theme.of(context)
                                       .textTheme
                                       .subtitle1
@@ -126,6 +162,13 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
                           margin: EdgeInsets.only(top: 20.0),
                           child: ElevatedButton(
                               onPressed: () async {
+                                Provider.of<ChallengeCompleteHandler>(context,
+                                        listen: false)
+                                    .setChallengeText(_controller.value.text);
+                                await Provider.of<ChallengeCompleteHandler>(
+                                        context,
+                                        listen: false)
+                                    .createLog();
                                 widget.endLogFlow();
                               },
                               style: ElevatedButton.styleFrom(

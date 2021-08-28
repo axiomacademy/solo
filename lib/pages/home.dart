@@ -398,6 +398,7 @@ class _LogPageState extends State<LogPage> {
                       children:
                           snapshot.data!.docs.map((DocumentSnapshot document) {
                     Challenge challenge = document.data()! as Challenge;
+                    String challengeId = document.id;
 
                     return FutureBuilder<DocumentSnapshot>(
                         future: _missionRef.doc(challenge.mission).get(),
@@ -416,8 +417,9 @@ class _LogPageState extends State<LogPage> {
                             Mission mission = snapshot.data!.data() as Mission;
                             return GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context)
-                                      .push(ChallengeCompleteLogPage.route());
+                                  Navigator.of(context).push(
+                                      ChallengeCompleteLogPage.route(
+                                          challenge, challengeId));
                                 },
                                 child: Container(
                                     width: 300,

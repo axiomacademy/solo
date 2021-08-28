@@ -24,6 +24,10 @@ class LogElement extends StatelessWidget {
         title = log.contentTitle!;
         label = '🧠 Content';
         break;
+      case 'challenge':
+        title = log.challengeTitle ?? "";
+        label = '🥊 Challenge';
+        break;
       default:
         title = 'Error';
         label = 'error';
@@ -37,6 +41,10 @@ class LogElement extends StatelessWidget {
               break;
             case 'content':
               Navigator.of(context).push(ContentLogReview.route(log, mission));
+              break;
+            case 'challenge':
+              Navigator.of(context)
+                  .push(ChallengeLogReview.route(log, mission));
               break;
             default:
               break;
@@ -53,13 +61,13 @@ class LogElement extends StatelessWidget {
             ),
             child: Row(children: <Widget>[
               Container(
-                  width: 190.0,
+                  width: 180.0,
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(title,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: TextOverflow.fade,
                             style: Theme.of(context).textTheme.headline6),
                         Container(
                             margin: EdgeInsets.only(top: 5.0),

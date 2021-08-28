@@ -36,13 +36,20 @@ class Log {
   final String? contentTitle;
   final String? contentReview;
 
+  final String? challengeTitle;
+  final String? challengeDescription;
+  final String? challengeText;
+
   Log(
       {required this.type,
       required this.mission,
       this.progressLevel,
       this.progressLog,
       this.contentTitle,
-      this.contentReview});
+      this.contentReview,
+      this.challengeTitle,
+      this.challengeDescription,
+      this.challengeText});
 
   Log.fromJson(Map<String, Object?> json)
       : type = json['type']! as String,
@@ -50,7 +57,10 @@ class Log {
         progressLevel = json['progress_level'] as int?,
         progressLog = json['progress_log'] as String?,
         contentTitle = json['content_title'] as String?,
-        contentReview = json['content_review'] as String?;
+        contentReview = json['content_review'] as String?,
+        challengeTitle = json['challenge_title'] as String?,
+        challengeDescription = json['challenge_description'] as String?,
+        challengeText = json['challenge_text'] as String?;
 
   Map<String, Object?> toJson() {
     return {
@@ -60,6 +70,9 @@ class Log {
       'progress_log': progressLog,
       'content_title': contentTitle,
       'content_review': contentReview,
+      'challenge_title': challengeTitle,
+      'challenge_description': challengeDescription,
+      'challenge_text': challengeText
     };
   }
 }
