@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/models.dart';
+import '../services/energy_service.dart';
 import '../theme.dart';
 
 class ProgressLogPage extends StatefulWidget {
@@ -62,6 +63,9 @@ class ProgressLogHandler {
 
   Future<void> createLog() async {
     User? user = FirebaseAuth.instance.currentUser!;
+    // Check if the energy requirements are met
+    await EnergyService.completeLog(user.email!);
+
     final logRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/logs')
         .withConverter<Log>(
@@ -165,10 +169,17 @@ class _ProgressTextViewState extends State<ProgressTextView> {
                                 Provider.of<ProgressLogHandler>(context,
                                         listen: false)
                                     .setText(_controller.value.text);
-                                await Provider.of<ProgressLogHandler>(context,
-                                        listen: false)
-                                    .createLog();
-                                widget.endLogFlow();
+
+                                try {
+                                  await Provider.of<ProgressLogHandler>(context,
+                                          listen: false)
+                                      .createLog();
+                                } catch (e) {
+                                  // Do whatever error showing here
+                                  print("HII");
+                                } finally {
+                                  widget.endLogFlow();
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,

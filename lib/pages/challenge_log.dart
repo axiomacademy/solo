@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:solo/services/energy_service.dart';
 
 import '../models/models.dart';
 import '../theme.dart';
@@ -59,6 +60,9 @@ class ChallengeHandler {
 
   Future<void> createChallenge() async {
     User? user = FirebaseAuth.instance.currentUser!;
+    // Take the energy requirements
+    await EnergyService.createChallenge(user.email!);
+
     final logRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/challenges')
         .withConverter<Challenge>(
@@ -194,10 +198,15 @@ class _ChallengeCreateViewState extends State<ChallengeCreateView> {
                                     .setChallengeParameters(
                                         _titleController.value.text,
                                         _descriptionController.value.text);
-                                await Provider.of<ChallengeHandler>(context,
-                                        listen: false)
-                                    .createChallenge();
-                                widget.endLogFlow();
+                                try {
+                                  await Provider.of<ChallengeHandler>(context,
+                                          listen: false)
+                                      .createChallenge();
+                                } catch (e) {
+                                  print("HIII");
+                                } finally {
+                                  widget.endLogFlow();
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,

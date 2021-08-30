@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/models.dart';
+import '../services/energy_service.dart';
 import '../theme.dart';
 
 class ContentLogPage extends StatefulWidget {
@@ -62,6 +63,8 @@ class ContentLogHandler {
 
   Future<void> createLog() async {
     User? user = FirebaseAuth.instance.currentUser!;
+    // Check if the energy requirements are met
+    await EnergyService.completeLog(user.email!);
     final logRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/logs')
         .withConverter<Log>(
@@ -165,10 +168,16 @@ class _ReviewViewState extends State<ReviewView> {
                                 Provider.of<ContentLogHandler>(context,
                                         listen: false)
                                     .setReview(_controller.value.text);
-                                await Provider.of<ContentLogHandler>(context,
-                                        listen: false)
-                                    .createLog();
-                                widget.endLogFlow();
+
+                                try {
+                                  await Provider.of<ContentLogHandler>(context,
+                                          listen: false)
+                                      .createLog();
+                                } catch (e) {
+                                  print("HII");
+                                } finally {
+                                  widget.endLogFlow();
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,

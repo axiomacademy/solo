@@ -54,7 +54,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
 class RegisterHandler {
   String _name = 'Learner';
-  String _email = '';
   String _missionTitle = '';
   String _missionPurpose = '';
 
@@ -72,10 +71,6 @@ class RegisterHandler {
     _name = name;
   }
 
-  void setEmail(String email) {
-    _email = email;
-  }
-
   void setMissionTitle(String missionTitle) {
     _missionTitle = missionTitle;
   }
@@ -87,9 +82,13 @@ class RegisterHandler {
   Future<void> createUser() async {
     // Create learner
     User? user = FirebaseAuth.instance.currentUser!;
-    await learnerRef.doc(user.email).set(
-          Learner(email: user.email!, name: _name, energy: 0, coins: 0),
-        );
+    await learnerRef.doc(user.email).set(Learner(
+        email: user.email!,
+        name: _name,
+        energy: 100,
+        coins: 0,
+        mined: 0,
+        currentPlanet: "earth"));
 
     // Create learner missions
     final missionRef = FirebaseFirestore.instance

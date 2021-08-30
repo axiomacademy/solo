@@ -572,54 +572,119 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
+  late Stream<QuerySnapshot<Learner>> _learnerStream;
+  late CollectionReference<Planet> _planetRef;
+
+  @override
+  void initState() {
+    // Setting up stream from firebase
+    User user = FirebaseAuth.instance.currentUser!;
+    _planetRef =
+        FirebaseFirestore.instance.collection('planets').withConverter<Planet>(
+              fromFirestore: (snapshot, _) => Planet.fromJson(snapshot.data()!),
+              toFirestore: (planet, _) => planet.toJson(),
+            );
+    _learnerStream = FirebaseFirestore.instance
+        .collection('learners')
+        .where('email', isEqualTo: user.email)
+        .withConverter<Learner>(
+          fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
+          toFirestore: (learner, _) => learner.toJson(),
+        )
+        .snapshots();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text("Earth",
-                          style: Theme.of(context).primaryTextTheme.headline2),
-                      Text("The Solar System",
-                          style: Theme.of(context).textTheme.headline5),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: LinearProgressIndicator(
-                              minHeight: 10.0,
-                              value: 0.5,
-                              backgroundColor: Colors.purple[50],
-                              color: Theme.of(context).primaryColor)),
-                      Container(
-                          margin: EdgeInsets.only(top: 5.0),
-                          child: Row(children: [
-                            Text("Mining Progress".toUpperCase(),
-                                style: Theme.of(context).textTheme.overline),
-                            Spacer(),
-                            Text("🪙  10",
-                                style: Theme.of(context).textTheme.subtitle1)
-                          ])),
-                      Expanded(
-                          child: Card(
-                              elevation: 0,
-                              color: Colors.grey[100],
-                              margin: EdgeInsets.only(top: 20.0),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
-                              child: Center(
-                                  child: Container(
-                                width: 250,
-                                child: Text(
-                                    "Working on cool game elements to bring to you 🏗️",
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .subtitle1
-                                        ?.copyWith(color: Colors.grey[600])),
-                              )))),
-                    ]))));
+    return StreamBuilder<QuerySnapshot>(
+        stream: _learnerStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
+          }
+
+          Learner learner = snapshot.data!.docs.single.data() as Learner;
+          return FutureBuilder<DocumentSnapshot>(
+              future: _planetRef.doc(learner.currentPlanet).get(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text("Something went wrong");
+                }
+
+                if (snapshot.hasData && !snapshot.data!.exists) {
+                  return Text("Document does not exist");
+                }
+
+                if (snapshot.connectionState == ConnectionState.done) {
+                  Planet planet = snapshot.data!.data() as Planet;
+                  return Material(
+                      child: SafeArea(
+                          child: Container(
+                              padding: EdgeInsets.all(30.0),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(planet.name,
+                                        style: Theme.of(context)
+                                            .primaryTextTheme
+                                            .headline2),
+                                    Text(planet.system,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 20.0),
+                                        child: LinearProgressIndicator(
+                                            minHeight: 10.0,
+                                            value: (learner.mined / 100),
+                                            backgroundColor: Colors.purple[50],
+                                            color: Theme.of(context)
+                                                .primaryColor)),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 5.0),
+                                        child: Row(children: [
+                                          Text("Mining Progress".toUpperCase(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .overline),
+                                          Spacer(),
+                                          Text("🪙 100",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1)
+                                        ])),
+                                    Expanded(
+                                        child: Card(
+                                            elevation: 0,
+                                            color: Colors.grey[100],
+                                            margin: EdgeInsets.only(top: 20.0),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20.0))),
+                                            child: Center(
+                                                child: Container(
+                                              width: 250,
+                                              child: Text(
+                                                  "Working on cool game elements to bring to you 🏗️",
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle1
+                                                      ?.copyWith(
+                                                          color: Colors
+                                                              .grey[600])),
+                                            )))),
+                                  ]))));
+                }
+                return Container();
+              });
+        });
   }
 }

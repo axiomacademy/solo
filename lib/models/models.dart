@@ -113,22 +113,45 @@ class Mission {
   }
 }
 
+class Planet {
+  final String name;
+  final String system;
+  final String next;
+
+  Planet({required this.name, required this.system, required this.next});
+
+  Planet.fromJson(Map<String, Object?> json)
+      : name = json['name']! as String,
+        system = json['system']! as String,
+        next = json['next']! as String;
+
+  Map<String, Object?> toJson() {
+    return {'name': name, 'system': system, 'next': next};
+  }
+}
+
 class Learner {
   final String email;
   final String name;
+  final String currentPlanet;
   final int energy;
   final int coins;
+  final int mined;
 
   Learner(
       {required this.email,
       required this.name,
       required this.energy,
+      required this.mined,
+      required this.currentPlanet,
       required this.coins});
 
   Learner.fromJson(Map<String, Object?> json)
       : email = json['email']! as String,
         name = json['name']! as String,
         energy = json['energy']! as int,
+        currentPlanet = json['current_planet']! as String,
+        mined = json['mined']! as int,
         coins = json['coins']! as int;
 
   Map<String, Object?> toJson() {
@@ -137,6 +160,8 @@ class Learner {
       'name': name,
       'energy': energy,
       'coins': coins,
+      'mined': mined,
+      'current_planet': currentPlanet,
     };
   }
 }

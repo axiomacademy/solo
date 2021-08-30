@@ -25,7 +25,7 @@ class LogElement extends StatelessWidget {
         label = '🧠 Content';
         break;
       case 'challenge':
-        title = log.challengeTitle ?? "";
+        title = log.challengeTitle!;
         label = '🥊 Challenge';
         break;
       default:

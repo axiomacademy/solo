@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../services/energy_service.dart';
 import '../models/models.dart';
 import '../theme.dart';
 
@@ -62,6 +63,9 @@ class ChallengeCompleteHandler {
 
   Future<void> createLog() async {
     User? user = FirebaseAuth.instance.currentUser!;
+    // Give the reward
+    await EnergyService.completeChallenge(user.email!);
+
     final logRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/logs')
         .withConverter<Log>(
@@ -165,11 +169,16 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
                                 Provider.of<ChallengeCompleteHandler>(context,
                                         listen: false)
                                     .setChallengeText(_controller.value.text);
-                                await Provider.of<ChallengeCompleteHandler>(
-                                        context,
-                                        listen: false)
-                                    .createLog();
-                                widget.endLogFlow();
+                                try {
+                                  await Provider.of<ChallengeCompleteHandler>(
+                                          context,
+                                          listen: false)
+                                      .createLog();
+                                } catch (e) {
+                                  print("HIII");
+                                } finally {
+                                  widget.endLogFlow();
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
