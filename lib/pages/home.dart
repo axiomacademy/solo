@@ -12,6 +12,7 @@ import '../models/models.dart';
 import 'progress_log.dart';
 import 'challenge_log.dart';
 import 'recall_log.dart';
+import 'review_log.dart';
 import 'challenge_complete.dart';
 
 class HomePage extends StatefulWidget {
@@ -542,7 +543,9 @@ class _LogPageState extends State<LogPage> {
                               style: Theme.of(context).textTheme.subtitle1))))),
           Expanded(
             child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(ReviewLogPage.route());
+                },
                 child: Container(
                     height: 50,
                     padding:
@@ -555,7 +558,7 @@ class _LogPageState extends State<LogPage> {
                       ),
                     ),
                     child: Center(
-                        child: Text("🃏 Cards",
+                        child: Text("🃏 Review",
                             style: Theme.of(context).textTheme.subtitle1)))),
           )
         ])
