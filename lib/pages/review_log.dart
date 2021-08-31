@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -183,8 +184,11 @@ class _MissionCardsAddViewState extends State<MissionCardsAddView> {
   }
 
   Future<void> _createReviewCard(String missionId) async {
+    var rng = new Random();
+
     await _cardsRef.add(ReviewCard(
         mission: missionId,
+        rid: rng.nextInt(100000),
         topText: _topController.value.text,
         bottomText: _bottomController.value.text));
   }

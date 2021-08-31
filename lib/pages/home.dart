@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'dart:math';
+
 // Components
 import '../components/log_element.dart';
 
@@ -14,6 +16,7 @@ import 'challenge_log.dart';
 import 'recall_log.dart';
 import 'review_log.dart';
 import 'challenge_complete.dart';
+import 'cards.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -316,6 +319,7 @@ class LogPage extends StatefulWidget {
 class _LogPageState extends State<LogPage> {
   late Stream<QuerySnapshot<Challenge>> _challengeStream;
   late CollectionReference<Mission> _missionRef;
+  late CollectionReference<ReviewCard> _cardRef;
 
   @override
   void initState() {
@@ -326,6 +330,12 @@ class _LogPageState extends State<LogPage> {
         .withConverter<Mission>(
           fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
           toFirestore: (mission, _) => mission.toJson(),
+        );
+    _cardRef = FirebaseFirestore.instance
+        .collection('learners/${user.email}/cards')
+        .withConverter<ReviewCard>(
+          fromFirestore: (snapshot, _) => ReviewCard.fromJson(snapshot.data()!),
+          toFirestore: (card, _) => card.toJson(),
         );
     _challengeStream = FirebaseFirestore.instance
         .collection('learners/${user.email}/challenges')
@@ -338,6 +348,22 @@ class _LogPageState extends State<LogPage> {
     super.initState();
   }
 
+  Future<List> _getDailyReview() async {
+    // First generate 10 random numbers
+    var rng = new Random();
+    List<List<dynamic>> dailyReview = [];
+    for (int i = 0; i < 10; i++) {
+      var rid = rng.nextInt(100000);
+      QuerySnapshot<ReviewCard> cardQuery = await _cardRef
+          .where('rid', isGreaterThanOrEqualTo: rid)
+          .limit(1)
+          .get();
+      dailyReview.add([cardQuery.docs.single.id, cardQuery.docs.single.data()]);
+    }
+
+    return dailyReview;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -347,31 +373,41 @@ class _LogPageState extends State<LogPage> {
       padding: EdgeInsets.all(30.0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
           Widget>[
-        Container(
-            height: 400,
-            padding: EdgeInsets.all(30.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.all(
-                Radius.circular(15.0),
-              ),
-            ),
-            child: Center(
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Text("Review your knowledge",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline4?.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.w500)),
-              Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  child: Text("To boost your retention",
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle1
-                          ?.copyWith(color: Colors.white)))
-            ]))),
+        GestureDetector(
+            onTap: () async {
+              Navigator.of(context)
+                  .push(CardsPage.route(await _getDailyReview()));
+            },
+            child: Container(
+                height: 400,
+                padding: EdgeInsets.all(30.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15.0),
+                  ),
+                ),
+                child: Center(
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                      Text("Review your knowledge daily",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline4
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500)),
+                      Container(
+                          margin: EdgeInsets.only(top: 10.0),
+                          child: Text("You have 10 cards left today",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  ?.copyWith(color: Colors.white)))
+                    ])))),
         Container(
           margin: EdgeInsets.only(top: 20.0),
           child: Text("Challenges",

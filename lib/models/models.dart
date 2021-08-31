@@ -2,20 +2,26 @@ class ReviewCard {
   final String mission;
   final String topText;
   final String bottomText;
+  final int rid;
 
   ReviewCard(
-      {required this.mission, required this.topText, required this.bottomText});
+      {required this.mission,
+      required this.topText,
+      required this.bottomText,
+      required this.rid});
 
   ReviewCard.fromJson(Map<String, Object?> json)
       : mission = json['mission']! as String,
         topText = json['top_text']! as String,
-        bottomText = json['bottom_text']! as String;
+        bottomText = json['bottom_text']! as String,
+        rid = json['rid']! as int;
 
   Map<String, Object?> toJson() {
     return {
       'mission': mission,
       'top_text': topText,
       'bottom_text': bottomText,
+      'rid': rid,
     };
   }
 }
