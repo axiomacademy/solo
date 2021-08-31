@@ -24,15 +24,20 @@ class ChallengeLogReview extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(children: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.arrow_back, size: 50.0),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            }),
-                      ]),
+                      Ink(
+                          decoration: ShapeDecoration(
+                            color: Theme.of(context).primaryColorLight,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0))),
+                          ),
+                          child: IconButton(
+                              icon: Icon(Icons.arrow_back, size: 20.0),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              })),
                       Container(
-                          padding: EdgeInsets.only(top: 20.0),
+                          padding: EdgeInsets.only(top: 30.0),
                           child: Text(log.challengeTitle!,
                               style: Theme.of(context)
                                   .primaryTextTheme
@@ -85,13 +90,18 @@ class ContentLogReview extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(children: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.arrow_back, size: 50.0),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            }),
-                      ]),
+                      Ink(
+                          decoration: ShapeDecoration(
+                            color: Theme.of(context).primaryColorLight,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0))),
+                          ),
+                          child: IconButton(
+                              icon: Icon(Icons.arrow_back, size: 20.0),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              })),
                       Container(
                           padding: EdgeInsets.only(top: 20.0),
                           child: Text(log.contentTitle!,
@@ -139,13 +149,18 @@ class ProgressLogReview extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(children: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.arrow_back, size: 50.0),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            }),
-                      ]),
+                      Ink(
+                          decoration: ShapeDecoration(
+                            color: Theme.of(context).primaryColorLight,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0))),
+                          ),
+                          child: IconButton(
+                              icon: Icon(Icons.arrow_back, size: 20.0),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              })),
                       Container(
                           padding: EdgeInsets.only(top: 20.0),
                           child: Text("Progress Log",

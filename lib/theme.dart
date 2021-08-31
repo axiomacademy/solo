@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 const primaryColor = Color(0xFF7938D8);
 
 /// Axiom Primary Color Light
-const primaryColors_100 = Color(0xFFA378E5);
+const primaryColors_100 = Color(0xFFEEE7FA);
 
 /// Axiom Secondary Color
 const secondaryColor = Color(0xFF491496);
@@ -20,6 +20,7 @@ ThemeData buildTheme() {
 
   return base.copyWith(
     primaryColor: primaryColor,
+    primaryColorLight: primaryColors_100,
     primaryColorDark: secondaryColor,
     accentColor: accentColor,
     textTheme: textBase,

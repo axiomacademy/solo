@@ -1,3 +1,25 @@
+class ReviewCard {
+  final String mission;
+  final String topText;
+  final String bottomText;
+
+  ReviewCard(
+      {required this.mission, required this.topText, required this.bottomText});
+
+  ReviewCard.fromJson(Map<String, Object?> json)
+      : mission = json['mission']! as String,
+        topText = json['top_text']! as String,
+        bottomText = json['bottom_text']! as String;
+
+  Map<String, Object?> toJson() {
+    return {
+      'mission': mission,
+      'top_text': topText,
+      'bottom_text': bottomText,
+    };
+  }
+}
+
 class Challenge {
   final String mission;
   final String title;
@@ -73,24 +95,6 @@ class Log {
       'challenge_title': challengeTitle,
       'challenge_description': challengeDescription,
       'challenge_text': challengeText
-    };
-  }
-}
-
-class ReviewCard {
-  final String topText;
-  final String bottomText;
-
-  ReviewCard({required this.topText, required this.bottomText});
-
-  ReviewCard.fromJson(Map<String, Object?> json)
-      : topText = json['top_text']! as String,
-        bottomText = json['bottom_text']! as String;
-
-  Map<String, Object?> toJson() {
-    return {
-      'top_text': topText,
-      'bottom_text': bottomText,
     };
   }
 }
