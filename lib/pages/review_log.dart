@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/models.dart';
 import '../theme.dart';
+import 'cards.dart';
 
 class ReviewLogPage extends StatefulWidget {
   ReviewLogPage({Key? key}) : super(key: key);
@@ -278,64 +279,7 @@ class _MissionCardsViewState extends State<MissionCardsView> {
                                           .textTheme
                                           .headline6
                                           ?.copyWith(height: 1.6))),
-                              Container(
-                                  height: 120,
-                                  padding: EdgeInsets.all(30.0),
-                                  margin: EdgeInsets.only(top: 20.0),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(15.0),
-                                    ),
-                                  ),
-                                  child: Center(
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                        Text("Review all mission cards",
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline6
-                                                ?.copyWith(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                        StreamBuilder<QuerySnapshot>(
-                                            stream: _cardsRef
-                                                .where('mission',
-                                                    isEqualTo: missionId)
-                                                .snapshots(),
-                                            builder: (BuildContext context,
-                                                AsyncSnapshot<QuerySnapshot>
-                                                    snapshot) {
-                                              if (snapshot.hasError) {
-                                                return Text(
-                                                    "Something went wrong");
-                                              }
-
-                                              if (snapshot.connectionState ==
-                                                  ConnectionState.waiting) {
-                                                return Text("Loading");
-                                              }
-
-                                              int count = snapshot.data!.size;
-
-                                              return Container(
-                                                  margin:
-                                                      EdgeInsets.only(top: 5.0),
-                                                  child: Text(
-                                                      "$count total cards",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .subtitle1
-                                                          ?.copyWith(
-                                                              color: Colors
-                                                                  .white)));
-                                            })
-                                      ]))),
+                              _buildReviewButton(missionId),
                               Container(
                                   margin:
                                       EdgeInsets.only(top: 20.0, bottom: 10.0),
@@ -439,6 +383,72 @@ class _MissionCardsViewState extends State<MissionCardsView> {
                       }
                       return Container();
                     }))));
+  }
+
+  Widget _buildReviewButton(String missionId) {
+    return GestureDetector(
+        onTap: () async {
+          Navigator.of(context).push(CardsPage.route(await _getReview()));
+        },
+        child: Container(
+            height: 120,
+            padding: EdgeInsets.all(30.0),
+            margin: EdgeInsets.only(top: 20.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.all(
+                Radius.circular(15.0),
+              ),
+            ),
+            child: Center(
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Text("Review mission cards",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Colors.white, fontWeight: FontWeight.w500)),
+              StreamBuilder<QuerySnapshot>(
+                  stream: _cardsRef
+                      .where('mission', isEqualTo: missionId)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text("Something went wrong");
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text("Loading");
+                    }
+
+                    int count = snapshot.data!.size;
+
+                    return Container(
+                        margin: EdgeInsets.only(top: 5.0),
+                        child: Text("$count total cards",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1
+                                ?.copyWith(color: Colors.white)));
+                  })
+            ]))));
+  }
+
+  Future<List> _getReview() async {
+    // Choosing 10 random cards
+    var rng = new Random();
+    List<List<dynamic>> review = [];
+    for (int i = 0; i < 10; i++) {
+      var rid = rng.nextInt(100000);
+      QuerySnapshot<ReviewCard> cardQuery = await _cardsRef
+          .where('rid', isGreaterThanOrEqualTo: rid)
+          .limit(1)
+          .get();
+      review.add([cardQuery.docs.single.id, cardQuery.docs.single.data()]);
+    }
+
+    return review;
   }
 }
 
@@ -552,18 +562,6 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                               ])));
                                 }).toList());
                           }),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                              onPressed: () async {},
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("Review all cards".toUpperCase()),
-                                Spacer(),
-                              ])))
                     ]))));
   }
 }

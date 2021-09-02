@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import 'dart:math';
 
@@ -171,6 +173,7 @@ class _JourneyPageState extends State<JourneyPage> {
           fromFirestore: (snapshot, _) => Log.fromJson(snapshot.data()!),
           toFirestore: (log, _) => log.toJson(),
         )
+        .orderBy('timestamp', descending: true)
         .snapshots();
 
     super.initState();
@@ -180,32 +183,29 @@ class _JourneyPageState extends State<JourneyPage> {
   Widget build(BuildContext context) {
     return Material(
         child: SafeArea(
-            child: SingleChildScrollView(
-                child: Container(
-                    padding: EdgeInsets.all(30.0),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.only(top: 20.0),
-                            child: Text("Active Missions",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    ?.copyWith(fontSize: 24)),
-                          ),
-                          _buildMissions(),
-                          Container(
-                            margin: EdgeInsets.only(top: 20.0),
-                            child: Text("Recent Activity",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    ?.copyWith(fontSize: 24)),
-                          ),
-                          _buildLogActivity(),
-                        ])))));
+            child: Container(
+      padding: EdgeInsets.all(30.0),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+          margin: EdgeInsets.only(top: 20.0),
+          child: Text("Active Missions",
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5
+                  ?.copyWith(fontSize: 24)),
+        ),
+        _buildMissions(),
+        Container(
+          margin: EdgeInsets.only(top: 20.0),
+          child: Text("Recent Activity",
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5
+                  ?.copyWith(fontSize: 24)),
+        ),
+        Expanded(child: _buildLogActivity())
+      ]),
+    )));
   }
 
   Widget _buildLogActivity() {
@@ -220,11 +220,33 @@ class _JourneyPageState extends State<JourneyPage> {
             return Text("Loading");
           }
 
-          return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                Log log = document.data()! as Log;
+          List<Log> logs = snapshot.data!.docs.map((DocumentSnapshot document) {
+            return document.data()! as Log;
+          }).toList();
 
+          return StickyGroupedListView<Log, DateTime>(
+              elements: logs,
+              order: StickyGroupedListOrder.ASC,
+              groupBy: (Log log) => DateTime(
+                  log.timestamp.year, log.timestamp.month, log.timestamp.day),
+              groupComparator: (DateTime value1, DateTime value2) =>
+                  value2.compareTo(value1),
+              itemComparator: (Log log1, Log log2) =>
+                  log1.timestamp.compareTo(log2.timestamp),
+              groupSeparatorBuilder: (Log log) => Container(
+                    height: 40,
+                    margin: EdgeInsets.only(top: 20.0),
+                    width: 120,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight,
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                        child: Text(
+                            '${log.timestamp.day}/${log.timestamp.month}/${log.timestamp.year}',
+                            style: Theme.of(context).textTheme.subtitle1)),
+                  ),
+              itemBuilder: (_, Log log) {
                 return FutureBuilder<DocumentSnapshot>(
                     future: _missionRef.doc(log.mission).get(),
                     builder: (BuildContext context,
@@ -244,7 +266,7 @@ class _JourneyPageState extends State<JourneyPage> {
 
                       return Container();
                     });
-              }).toList());
+              });
         });
   }
 
@@ -349,7 +371,7 @@ class _LogPageState extends State<LogPage> {
   }
 
   Future<List> _getDailyReview() async {
-    // First generate 10 random numbers
+    // First, choose 10 random cards
     var rng = new Random();
     List<List<dynamic>> dailyReview = [];
     for (int i = 0; i < 10; i++) {

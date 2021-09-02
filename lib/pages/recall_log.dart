@@ -75,6 +75,7 @@ class ContentLogHandler {
     await logRef.add(Log(
         type: 'content',
         mission: _missionId,
+        timestamp: DateTime.now(),
         contentTitle: _content,
         contentReview: _review));
   }

@@ -76,6 +76,7 @@ class ProgressLogHandler {
     await logRef.add(Log(
         type: 'progress',
         mission: _missionId,
+        timestamp: DateTime.now(),
         progressLevel: _level,
         progressLog: _text));
   }

@@ -76,6 +76,7 @@ class ChallengeCompleteHandler {
     await logRef.add(Log(
         type: 'challenge',
         mission: challenge.mission,
+        timestamp: DateTime.now(),
         challengeTitle: challenge.title,
         challengeDescription: challenge.description,
         challengeText: _text));

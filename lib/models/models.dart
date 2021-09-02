@@ -1,3 +1,6 @@
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ReviewCard {
   final String mission;
   final String topText;
@@ -57,6 +60,7 @@ class Challenge {
 class Log {
   final String type;
   final String mission;
+  final DateTime timestamp;
 
   final int? progressLevel;
   final String? progressLog;
@@ -71,6 +75,7 @@ class Log {
   Log(
       {required this.type,
       required this.mission,
+      required this.timestamp,
       this.progressLevel,
       this.progressLog,
       this.contentTitle,
@@ -82,6 +87,7 @@ class Log {
   Log.fromJson(Map<String, Object?> json)
       : type = json['type']! as String,
         mission = json['mission']! as String,
+        timestamp = (json['timestamp']! as Timestamp).toDate(),
         progressLevel = json['progress_level'] as int?,
         progressLog = json['progress_log'] as String?,
         contentTitle = json['content_title'] as String?,
@@ -94,6 +100,7 @@ class Log {
     return {
       'type': type,
       'mission': mission,
+      'timestamp': timestamp,
       'progress_level': progressLevel,
       'progress_log': progressLog,
       'content_title': contentTitle,
