@@ -13,6 +13,7 @@ import 'dart:math';
 import '../components/log_element.dart';
 
 import '../models/models.dart';
+import 'welcome.dart';
 import 'progress_log.dart';
 import 'challenge_log.dart';
 import 'recall_log.dart';
@@ -109,7 +110,20 @@ class _HomePageState extends State<HomePage> {
                                   style:
                                       Theme.of(context).textTheme.headline6)),
                           Spacer(),
-                          CircleAvatar(backgroundColor: Colors.grey[300])
+                          Ink(
+                              decoration: ShapeDecoration(
+                                color: Theme.of(context).primaryColorLight,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                              ),
+                              child: IconButton(
+                                  icon: Icon(Icons.logout, size: 20.0),
+                                  onPressed: () async {
+                                    await FirebaseAuth.instance.signOut();
+                                    Navigator.of(context)
+                                        .pushReplacement(WelcomePage.route());
+                                  })),
                         ])))),
             body: Center(
               child: _widgetOptions.elementAt(_selectedIndex),
@@ -187,7 +201,6 @@ class _JourneyPageState extends State<JourneyPage> {
       padding: EdgeInsets.all(30.0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
-          margin: EdgeInsets.only(top: 20.0),
           child: Text("Active Missions",
               style: Theme.of(context)
                   .textTheme
@@ -196,7 +209,7 @@ class _JourneyPageState extends State<JourneyPage> {
         ),
         _buildMissions(),
         Container(
-          margin: EdgeInsets.only(top: 20.0),
+          margin: EdgeInsets.only(top: 30.0),
           child: Text("Recent Activity",
               style: Theme.of(context)
                   .textTheme
@@ -721,6 +734,49 @@ class _ExplorePageState extends State<ExplorePage> {
                                                   .textTheme
                                                   .subtitle1)
                                         ])),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 20.0),
+                                        child: ListTile(
+                                          contentPadding: EdgeInsets.all(10.0),
+                                          tileColor: Colors.grey[100],
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10.0))),
+                                          leading: Icon(Icons.bolt,
+                                              size: 30.0,
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          title: Text("Refuel rocket",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6),
+                                          subtitle: Text(
+                                              "Convert 100 coins to energy",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1),
+                                        )),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 10.0),
+                                        child: ListTile(
+                                          contentPadding: EdgeInsets.all(10.0),
+                                          tileColor: Colors.grey[100],
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10.0))),
+                                          leading: Icon(Icons.auto_fix_high,
+                                              size: 30.0,
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          title: Text("Energy Boost",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6),
+                                          subtitle: Text("Buy 100 energy",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1),
+                                        )),
                                     Expanded(
                                         child: Card(
                                             elevation: 0,

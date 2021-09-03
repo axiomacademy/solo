@@ -5,9 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 // Pages
 import './pages/welcome.dart';
+import './pages/home.dart';
 
 import 'theme.dart';
 
@@ -23,6 +25,27 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  Future<void> initPlatformState() async {
+    print("HII");
+    await Purchases.setDebugLogsEnabled(true);
+    await Purchases.setup("QgTjLzQksKRxMxLRvVmoMqwPdNBzUGHG");
+    print("HII");
+
+    try {
+      Offerings offerings = await Purchases.getOfferings();
+      print('HI2');
+      print(offerings.all);
+    } catch (e) {
+      // optional error handling
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +64,14 @@ class _AppState extends State<App> {
 
             // Once complete, show your application
             if (snapshot.connectionState == ConnectionState.done) {
-              return WelcomePage();
+              User? user = FirebaseAuth.instance.currentUser;
+              if (user != null) {
+                // Logged in, go straight to home page
+                print("Logged in");
+                return HomePage();
+              } else {
+                return WelcomePage();
+              }
             }
 
             // Otherwise, show something whilst waiting for initialization to complete
@@ -52,11 +82,7 @@ class _AppState extends State<App> {
 
   Future<FirebaseApp> _initFirebase() async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      // Logged in, go straight to home page
-      print("Logged in");
-    }
+
     return firebaseApp;
   }
 }
