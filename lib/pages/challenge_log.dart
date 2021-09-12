@@ -95,128 +95,134 @@ class _ChallengeCreateViewState extends State<ChallengeCreateView> {
   Widget build(BuildContext context) {
     return Material(
         child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                      ]),
-                      Spacer(),
-                      Container(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Set yourself a challenge 🔥",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline2
-                                  ?.copyWith(height: 1.15))),
-                      Container(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text(
-                              "There is no learning without doing. Set yourself practice sessions and directly train your skills, and you'll be a master in no time 💪. \n\nRemember challenges expire after a week so do them as soon as possible!",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.6))),
-                      Container(
-                          margin: EdgeInsets.only(top: 30.0),
-                          child: TextFormField(
-                            controller: _titleController,
-                            cursorColor: Theme.of(context).primaryColor,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              contentPadding: EdgeInsets.all(15),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0,
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              hintText: "What is your challenge?",
-                              hintStyle:
-                                  TextStyle(color: Theme.of(context).hintColor),
-                              focusColor: Theme.of(context).primaryColor,
-                            ),
-                          )),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: TextFormField(
-                            controller: _descriptionController,
-                            minLines: 5,
-                            maxLines: 5,
-                            cursorColor: Theme.of(context).primaryColor,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              contentPadding: EdgeInsets.all(15),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0,
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              hintText:
-                                  "Describe it in greater detail and layout your plan",
-                              hintStyle:
-                                  TextStyle(color: Theme.of(context).hintColor),
-                              focusColor: Theme.of(context).primaryColor,
-                            ),
-                          )),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                Provider.of<ChallengeHandler>(context,
-                                        listen: false)
-                                    .setChallengeParameters(
-                                        _titleController.value.text,
-                                        _descriptionController.value.text);
-                                try {
-                                  await Provider.of<ChallengeHandler>(context,
-                                          listen: false)
-                                      .createChallenge();
-                                } catch (e) {
-                                  print("HIII");
-                                } finally {
-                                  widget.endLogFlow();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("CREATE CHALLENGE"),
-                                Spacer(),
-                              ])))
-                    ]))));
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                          ]),
+                          Container(
+                              padding: EdgeInsets.only(top: 20.0),
+                              child: Text("Set yourself a challenge 🔥",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headline2
+                                      ?.copyWith(height: 1.15))),
+                          Container(
+                              padding: EdgeInsets.only(top: 10.0),
+                              child: Text(
+                                  "There is no learning without doing. Set yourself practice sessions and directly train your skills, and you'll be a master in no time 💪. \n\nRemember challenges expire after a week so do them as soon as possible!",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(height: 1.6))),
+                          Container(
+                              margin: EdgeInsets.only(top: 30.0),
+                              child: TextFormField(
+                                controller: _titleController,
+                                cursorColor: Theme.of(context).primaryColor,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  contentPadding: EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2.0,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  hintText: "What is your challenge?",
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                  focusColor: Theme.of(context).primaryColor,
+                                ),
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: TextFormField(
+                                controller: _descriptionController,
+                                minLines: 5,
+                                maxLines: 5,
+                                cursorColor: Theme.of(context).primaryColor,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  contentPadding: EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2.0,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  hintText:
+                                      "Describe it in greater detail and layout your plan",
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                  focusColor: Theme.of(context).primaryColor,
+                                ),
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    Provider.of<ChallengeHandler>(context,
+                                            listen: false)
+                                        .setChallengeParameters(
+                                            _titleController.value.text,
+                                            _descriptionController.value.text);
+                                    try {
+                                      await Provider.of<ChallengeHandler>(
+                                              context,
+                                              listen: false)
+                                          .createChallenge();
+                                    } catch (e) {
+                                      print("HIII");
+                                    } finally {
+                                      widget.endLogFlow();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("CREATE CHALLENGE"),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }
 

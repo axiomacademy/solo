@@ -78,9 +78,8 @@ class _MissionCardsAddViewState extends State<MissionCardsAddView> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Spacer(),
                       Container(
-                          padding: EdgeInsets.only(top: 10.0),
+                          padding: EdgeInsets.only(top: 20.0),
                           child: Text("Add a new card ✨",
                               style: Theme.of(context)
                                   .primaryTextTheme
@@ -234,155 +233,174 @@ class _MissionCardsViewState extends State<MissionCardsView> {
 
     return Material(
         child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: FutureBuilder<DocumentSnapshot>(
-                    future: _missionRef.doc(missionId).get(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text("Something went wrong");
-                      }
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: FutureBuilder<DocumentSnapshot>(
+                        future: _missionRef.doc(missionId).get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text("Something went wrong");
+                          }
 
-                      if (snapshot.hasData && !snapshot.data!.exists) {
-                        return Text("Document does not exist");
-                      }
+                          if (snapshot.hasData && !snapshot.data!.exists) {
+                            return Text("Document does not exist");
+                          }
 
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        Mission mission = snapshot.data!.data() as Mission;
-                        return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Ink(
-                                  decoration: ShapeDecoration(
-                                    color: Theme.of(context).primaryColorLight,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0))),
-                                  ),
-                                  child: IconButton(
-                                      icon: Icon(Icons.arrow_back, size: 20.0),
-                                      onPressed: () {
-                                        widget.returnHome();
-                                      })),
-                              Container(
-                                  margin: EdgeInsets.only(top: 20.0),
-                                  child: Text(mission.title,
-                                      style: Theme.of(context)
-                                          .primaryTextTheme
-                                          .headline2
-                                          ?.copyWith(height: 1.15))),
-                              Container(
-                                  padding: EdgeInsets.only(top: 0),
-                                  child: Text(mission.purpose,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline6
-                                          ?.copyWith(height: 1.6))),
-                              _buildReviewButton(missionId),
-                              Container(
-                                  margin:
-                                      EdgeInsets.only(top: 20.0, bottom: 10.0),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text("Cards",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                ?.copyWith(fontSize: 24)),
-                                        Spacer(),
-                                        ElevatedButton(
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            Mission mission = snapshot.data!.data() as Mission;
+                            return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Ink(
+                                      decoration: ShapeDecoration(
+                                        color:
+                                            Theme.of(context).primaryColorLight,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10.0))),
+                                      ),
+                                      child: IconButton(
+                                          icon: Icon(Icons.arrow_back,
+                                              size: 20.0),
                                           onPressed: () {
-                                            Navigator.of(context).pushNamed(
-                                                '/mission/add',
-                                                arguments: missionId);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            primary:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                          child: Text("Add".toUpperCase()),
-                                        )
-                                      ])),
-                              StreamBuilder(
-                                  stream: _cardsRef
-                                      .where('mission', isEqualTo: missionId)
-                                      .snapshots(),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                                    if (snapshot.hasError) {
-                                      return Text('Something went wrong');
-                                    }
+                                            widget.returnHome();
+                                          })),
+                                  Container(
+                                      margin: EdgeInsets.only(top: 20.0),
+                                      child: Text(mission.title,
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .headline2
+                                              ?.copyWith(height: 1.15))),
+                                  Container(
+                                      padding: EdgeInsets.only(top: 0),
+                                      child: Text(mission.purpose,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6
+                                              ?.copyWith(height: 1.6))),
+                                  _buildReviewButton(missionId),
+                                  Container(
+                                      margin: EdgeInsets.only(
+                                          top: 20.0, bottom: 10.0),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text("Cards",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5
+                                                    ?.copyWith(fontSize: 24)),
+                                            Spacer(),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pushNamed(
+                                                    '/mission/add',
+                                                    arguments: missionId);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              child: Text("Add".toUpperCase()),
+                                            )
+                                          ])),
+                                  StreamBuilder(
+                                      stream: _cardsRef
+                                          .where('mission',
+                                              isEqualTo: missionId)
+                                          .snapshots(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<QuerySnapshot>
+                                              snapshot) {
+                                        if (snapshot.hasError) {
+                                          return Text('Something went wrong');
+                                        }
 
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Text("Loading");
-                                    }
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Text("Loading");
+                                        }
 
-                                    List<List> cards = snapshot.data!.docs
-                                        .map((DocumentSnapshot document) {
-                                      return [document.id, document.data()!];
-                                    }).toList();
+                                        List<List> cards = snapshot.data!.docs
+                                            .map((DocumentSnapshot document) {
+                                          return [
+                                            document.id,
+                                            document.data()!
+                                          ];
+                                        }).toList();
 
-                                    return Expanded(
-                                        child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: cards.length,
-                                      itemBuilder: (BuildContext ctx, index) {
-                                        String cardId =
-                                            cards[index][0] as String;
-                                        ReviewCard cardData =
-                                            cards[index][1] as ReviewCard;
+                                        return SizedBox(
+                                            height: 400,
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: cards.length,
+                                              itemBuilder:
+                                                  (BuildContext ctx, index) {
+                                                String cardId =
+                                                    cards[index][0] as String;
+                                                ReviewCard cardData =
+                                                    cards[index][1]
+                                                        as ReviewCard;
 
-                                        return Dismissible(
-                                          key: UniqueKey(),
-                                          direction:
-                                              DismissDirection.endToStart,
-                                          onDismissed: (_) {
-                                            setState(() async {
-                                              cards.removeAt(index);
-                                              await _cardsRef
-                                                  .doc(cardId)
-                                                  .delete();
-                                            });
-                                          },
-                                          child: Card(
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: Container(
-                                              width: double.infinity,
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 20.0,
-                                                  horizontal: 20.0),
-                                              child: Text(cardData.topText,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle1,
-                                                  softWrap: true,
-                                                  overflow:
-                                                      TextOverflow.visible),
-                                            ),
-                                          ),
-                                          background: Container(
-                                            color: Colors.red,
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                            alignment: Alignment.centerRight,
-                                            child: Icon(
-                                              Icons.delete,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ));
-                                  })
-                            ]);
-                      }
-                      return Container();
-                    }))));
+                                                return Dismissible(
+                                                  key: UniqueKey(),
+                                                  direction: DismissDirection
+                                                      .endToStart,
+                                                  onDismissed: (_) {
+                                                    setState(() async {
+                                                      cards.removeAt(index);
+                                                      await _cardsRef
+                                                          .doc(cardId)
+                                                          .delete();
+                                                    });
+                                                  },
+                                                  child: Card(
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 5),
+                                                    child: Container(
+                                                      width: double.infinity,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 20.0,
+                                                              horizontal: 20.0),
+                                                      child: Text(
+                                                          cardData.topText,
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .subtitle1,
+                                                          softWrap: true,
+                                                          overflow: TextOverflow
+                                                              .visible),
+                                                    ),
+                                                  ),
+                                                  background: Container(
+                                                    color: Colors.red,
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 15),
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    child: Icon(
+                                                      Icons.delete,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ));
+                                      })
+                                ]);
+                          }
+                          return Container();
+                        })))));
   }
 
   Widget _buildReviewButton(String missionId) {

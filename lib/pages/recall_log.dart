@@ -129,7 +129,7 @@ class _ReviewViewState extends State<ReviewView> {
                                     color: Theme.of(context).primaryColor))),
                       ]),
                       Container(
-                          padding: EdgeInsets.only(top: 50.0),
+                          padding: EdgeInsets.only(top: 20.0),
                           child: Text("Notes that you will never forget 😋",
                               style: Theme.of(context)
                                   .primaryTextTheme
@@ -137,7 +137,7 @@ class _ReviewViewState extends State<ReviewView> {
                                   ?.copyWith(height: 1.15))),
                       Expanded(
                           child: Container(
-                              margin: EdgeInsets.only(top: 10.0),
+                              margin: EdgeInsets.only(top: 20.0),
                               child: TextFormField(
                                 controller: _controller,
                                 style: Theme.of(context)

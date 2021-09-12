@@ -72,7 +72,8 @@ class _HomePageState extends State<HomePage> {
         stream: _learnerStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return Text('Something went wrong');
+            print(snapshot.error);
+            return Text('Something went wronggg');
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -472,6 +473,29 @@ class _LogPageState extends State<LogPage> {
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text("Loading");
+                  }
+
+                  if (snapshot.data!.docs.length == 0) {
+                    return Container(
+                        height: 160,
+                        width: MediaQuery.of(context).size.width - 60,
+                        padding: EdgeInsets.all(20.0),
+                        margin: EdgeInsets.only(right: 10.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                              "No challenges, create one to supercharge your learning 🧠",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  ?.copyWith(color: Colors.grey[600])),
+                        ));
                   }
 
                   return Row(

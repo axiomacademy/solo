@@ -70,10 +70,9 @@ class _CardsPageState extends State<CardsPage> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(20.0))),
                               child: Container(
-                                  constraints: BoxConstraints(
-                                    minHeight: 400,
-                                  ),
                                   padding: EdgeInsets.all(30.0),
+                                  height:
+                                      MediaQuery.of(context).size.height / 3,
                                   child: Center(
                                       child: Text(
                                           (flipped)
