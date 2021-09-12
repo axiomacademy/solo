@@ -17,7 +17,7 @@ class LogElement extends StatelessWidget {
 
     switch (log.type) {
       case 'progress':
-        title = 'Progress Log';
+        title = 'drgdrgdrgdrgdrgdrgdrg';
         label = '🔥 Progress';
         break;
       case 'content':
@@ -60,21 +60,23 @@ class LogElement extends StatelessWidget {
               ),
             ),
             child: Row(children: <Widget>[
-              Container(
-                  width: 180.0,
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(title,
-                            overflow: TextOverflow.fade,
-                            style: Theme.of(context).textTheme.headline6),
-                        Container(
-                            margin: EdgeInsets.only(top: 5.0),
-                            child: Text(mission.title,
-                                style: Theme.of(context).textTheme.subtitle1))
-                      ])),
-              Spacer(),
+              Expanded(
+                  child: Container(
+                      margin: EdgeInsets.only(right: 10.0),
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(title,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: Theme.of(context).textTheme.headline6),
+                            Container(
+                                margin: EdgeInsets.only(top: 5.0),
+                                child: Text(mission.title,
+                                    style:
+                                        Theme.of(context).textTheme.subtitle1))
+                          ]))),
               Container(
                   padding:
                       EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),

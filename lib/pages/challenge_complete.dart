@@ -81,8 +81,6 @@ class ChallengeCompleteHandler {
         challengeDescription: challenge.description,
         challengeText: _text));
 
-    print(id);
-
     await FirebaseFirestore.instance
         .collection('learners/${user.email}/challenges')
         .doc(id)
@@ -104,6 +102,8 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Material(
         child: SafeArea(
             child: Container(
@@ -135,10 +135,11 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline2
-                                  ?.copyWith(height: 1.15))),
+                                  ?.copyWith(
+                                      fontSize: width / 7, height: 1.15))),
                       Expanded(
                           child: Container(
-                              margin: EdgeInsets.only(top: 20.0),
+                              margin: EdgeInsets.only(top: 0),
                               child: TextFormField(
                                 controller: _controller,
                                 style: Theme.of(context)
@@ -200,13 +201,17 @@ class ChallengeCompleteView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Material(
         child: SafeArea(
             child: Container(
                 padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                child: SingleChildScrollView(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
                       Row(children: <Widget>[
                         Expanded(
                             child: Container(
@@ -225,13 +230,14 @@ class ChallengeCompleteView extends StatelessWidget {
                                         BorderRadius.all(Radius.circular(3.0)),
                                     color: Colors.grey[200]))),
                       ]),
-                      Spacer(),
                       Container(
+                          padding: EdgeInsets.only(top: 24),
                           child: Text("You're a superstar learner ⭐",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline2
-                                  ?.copyWith(height: 1.15))),
+                                  ?.copyWith(
+                                      fontSize: width / 7, height: 1.15))),
                       Container(
                           padding: EdgeInsets.only(top: 24),
                           child: Text(
@@ -274,6 +280,6 @@ class ChallengeCompleteView extends StatelessWidget {
                                     style: Theme.of(context).textTheme.button),
                                 Spacer(),
                               ])))
-                    ]))));
+                    ])))));
   }
 }

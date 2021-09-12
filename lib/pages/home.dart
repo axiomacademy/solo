@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 import 'dart:math';
 
 // Components
@@ -74,7 +76,13 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
+            return Material(
+                child: Scaffold(
+                    body: Center(
+                        child: SpinKitThreeBounce(
+              color: Theme.of(context).accentColor,
+              size: 50.0,
+            ))));
           }
 
           Learner learner = snapshot.data!.docs.single.data() as Learner;
@@ -680,10 +688,17 @@ class _ExplorePageState extends State<ExplorePage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
+            return Material(
+                child: Scaffold(
+                    body: Center(
+                        child: SpinKitThreeBounce(
+              color: Theme.of(context).accentColor,
+              size: 50.0,
+            ))));
           }
 
           Learner learner = snapshot.data!.docs.single.data() as Learner;
+
           return FutureBuilder<DocumentSnapshot>(
               future: _planetRef.doc(learner.currentPlanet).get(),
               builder: (BuildContext context,

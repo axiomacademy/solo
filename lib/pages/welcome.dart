@@ -49,17 +49,17 @@ class _WelcomePageState extends State<WelcomePage> {
                 height: 375,
                 child: PageView(controller: _controller, children: <Widget>[
                   InformationPage(
-                      "./assets/img/reading_time.svg",
-                      "Accessible. Anytime, Anywhere.",
-                      "On-demand tutoring and scheduled lessons whenever you feel like it. It’s all up to you"),
+                      "./assets/img/boost.svg",
+                      "Supercharge your learning.",
+                      "Axiom uses cognitive science to boost your intrinsic motivation to learn new things"),
                   InformationPage(
-                      "./assets/img/wallet.svg",
-                      "Affordable. Pay only when you use.",
-                      "A pricing model that is both flexible and transparent, making your life a lot easier"),
+                      "./assets/img/play.svg",
+                      "Learning that feels like play.",
+                      "Axiom believes in exploratory learning, where you chart your own learning journey"),
                   InformationPage(
-                      "./assets/img/celebrating.svg",
-                      "Awesome. By students, for students.",
-                      "Packed with nice-to-have features, designed to ensure learning is convenient and fun"),
+                      "./assets/img/super.svg",
+                      "Build your best self.",
+                      "Axiom helps you grow throughout your life, so that you can do all the things you wanted to do"),
                 ])),
             SmoothPageIndicator(
               controller: _controller, // PageController

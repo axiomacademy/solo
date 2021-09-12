@@ -331,6 +331,8 @@ class _MissionSelectViewState extends State<MissionSelectView> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Material(
         child: SafeArea(
             child: Container(
@@ -363,7 +365,8 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline2
-                                  ?.copyWith(height: 1.15))),
+                                  ?.copyWith(
+                                      fontSize: width / 7, height: 1.15))),
                       StreamBuilder<QuerySnapshot>(
                           stream: _missionStream,
                           builder: (BuildContext context,
