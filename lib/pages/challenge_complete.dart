@@ -104,41 +104,43 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                      ]),
-                      Container(
-                          padding: EdgeInsets.only(top: 50.0),
-                          child: Text("Talk about your challenge 💪",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline2
-                                  ?.copyWith(
-                                      fontSize: width / 7, height: 1.15))),
-                      Expanded(
-                          child: Container(
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                          ]),
+                          Container(
+                              padding: EdgeInsets.only(top: 50.0),
+                              child: Text("Talk about your challenge 💪",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headline2
+                                      ?.copyWith(
+                                          fontSize: width / 7, height: 1.15))),
+                          Container(
                               margin: EdgeInsets.only(top: 0),
                               child: TextFormField(
                                 controller: _controller,
@@ -163,34 +165,37 @@ class _ChallengeTextViewState extends State<ChallengeTextView> {
                                       ?.copyWith(
                                           height: 1.5, color: Colors.grey[500]),
                                 ),
-                              ))),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                Provider.of<ChallengeCompleteHandler>(context,
-                                        listen: false)
-                                    .setChallengeText(_controller.value.text);
-                                try {
-                                  await Provider.of<ChallengeCompleteHandler>(
-                                          context,
-                                          listen: false)
-                                      .createLog();
-                                } catch (e) {
-                                  print("HIII");
-                                } finally {
-                                  widget.endLogFlow();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("Submit Log".toUpperCase()),
-                                Spacer(),
-                              ])))
-                    ]))));
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    Provider.of<ChallengeCompleteHandler>(
+                                            context,
+                                            listen: false)
+                                        .setChallengeText(
+                                            _controller.value.text);
+                                    try {
+                                      await Provider.of<
+                                                  ChallengeCompleteHandler>(
+                                              context,
+                                              listen: false)
+                                          .createLog();
+                                    } catch (e) {
+                                      print("HIII");
+                                    } finally {
+                                      widget.endLogFlow();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("Submit Log".toUpperCase()),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }
 

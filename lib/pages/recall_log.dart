@@ -95,48 +95,51 @@ class _ReviewViewState extends State<ReviewView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                      ]),
-                      Container(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: Text("Notes that you will never forget 😋",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline2
-                                  ?.copyWith(height: 1.15))),
-                      Expanded(
-                          child: Container(
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                          ]),
+                          Container(
+                              padding: EdgeInsets.only(top: 20.0),
+                              child: Text("Notes that you will never forget 😋",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headline2
+                                      ?.copyWith(height: 1.15))),
+                          Container(
                               margin: EdgeInsets.only(top: 20.0),
                               child: TextFormField(
                                 controller: _controller,
@@ -161,34 +164,35 @@ class _ReviewViewState extends State<ReviewView> {
                                       ?.copyWith(
                                           height: 1.5, color: Colors.grey[500]),
                                 ),
-                              ))),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                Provider.of<ContentLogHandler>(context,
-                                        listen: false)
-                                    .setReview(_controller.value.text);
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    Provider.of<ContentLogHandler>(context,
+                                            listen: false)
+                                        .setReview(_controller.value.text);
 
-                                try {
-                                  await Provider.of<ContentLogHandler>(context,
-                                          listen: false)
-                                      .createLog();
-                                } catch (e) {
-                                  print("HII");
-                                } finally {
-                                  widget.endLogFlow();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("Submit Log".toUpperCase()),
-                                Spacer(),
-                              ])))
-                    ]))));
+                                    try {
+                                      await Provider.of<ContentLogHandler>(
+                                              context,
+                                              listen: false)
+                                          .createLog();
+                                    } catch (e) {
+                                      print("HII");
+                                    } finally {
+                                      widget.endLogFlow();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("Submit Log".toUpperCase()),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }
 
@@ -204,103 +208,110 @@ class _ContentViewState extends State<ContentView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Colors.grey[200]))),
-                      ]),
-                      Spacer(),
-                      Container(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Text("What did you learn today?",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline2
-                                  ?.copyWith(height: 1.15))),
-                      Container(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text(
-                              "That's awesome someone's closer to being a genius today! Let's practice active learning to make sure that you never forget what you now know 🧠.",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.6))),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
-                          child: Text("What did you just learn 😎",
-                              style: Theme.of(context).textTheme.headline6)),
-                      Container(
-                          margin: EdgeInsets.only(top: 0.0),
-                          child: TextFormField(
-                            controller: _controller,
-                            cursorColor: Theme.of(context).primaryColor,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              contentPadding: EdgeInsets.all(15),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0,
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              hintText: "What does general relativity mean?",
-                              hintStyle:
-                                  TextStyle(color: Theme.of(context).hintColor),
-                              focusColor: Theme.of(context).primaryColor,
-                            ),
-                          )),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Provider.of<ContentLogHandler>(context,
-                                        listen: false)
-                                    .setContentTitle(_controller.value.text);
-                                Navigator.of(context).pushNamed('/review');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("NEXT"),
-                                Spacer(),
-                              ])))
-                    ]))));
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color: Colors.grey[200]))),
+                          ]),
+                          Container(
+                              padding: EdgeInsets.only(top: 20.0),
+                              child: Text("What did you learn today?",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headline2
+                                      ?.copyWith(height: 1.15))),
+                          Container(
+                              padding: EdgeInsets.only(top: 30.0),
+                              child: Text(
+                                  "That's awesome someone's closer to being a genius today! Let's practice active learning to make sure that you never forget what you now know 🧠.",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(height: 1.6))),
+                          Container(
+                              margin: EdgeInsets.only(top: 30.0, bottom: 10.0),
+                              child: Text("What did you just learn 😎",
+                                  style:
+                                      Theme.of(context).textTheme.headline6)),
+                          Container(
+                              margin: EdgeInsets.only(top: 0.0),
+                              child: TextFormField(
+                                controller: _controller,
+                                cursorColor: Theme.of(context).primaryColor,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  contentPadding: EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2.0,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  hintText:
+                                      "What does general relativity mean?",
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                  focusColor: Theme.of(context).primaryColor,
+                                ),
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Provider.of<ContentLogHandler>(context,
+                                            listen: false)
+                                        .setContentTitle(
+                                            _controller.value.text);
+                                    Navigator.of(context).pushNamed('/review');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("NEXT"),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }
 
@@ -333,8 +344,8 @@ class _MissionSelectViewState extends State<MissionSelectView> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return Material(
-        child: SafeArea(
+    return Scaffold(
+        body: SafeArea(
             child: Container(
                 padding: EdgeInsets.all(30.0),
                 child: Column(

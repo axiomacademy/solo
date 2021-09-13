@@ -203,92 +203,94 @@ class _PurposePageState extends State<PurposePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: SingleChildScrollView(
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      Image(image: AssetImage('assets/img/purpose.png')),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: Text("Mission Objectives",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline4
-                                  ?.copyWith(
-                                      height: 1.15,
-                                      fontWeight: FontWeight.w500))),
-                      Container(
-                          margin: EdgeInsets.only(top: 15.0),
-                          child: Text(
-                              "It's essential to define your learning goals and the purpose of your mission. Think about why you want to learn this, how you can use this ability and imagine yourself doing it to supercharge your motivation",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.5))),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          padding: EdgeInsets.all(20.0),
-                          decoration: BoxDecoration(
-                            color: Colors.purple[50],
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
-                          ),
-                          child: Text(
-                              '💡 Learning Tip: If your motivation is extrinsic (related to a promotion or other reward), then make sure you check with an expert on whether doing this will actually get you the reward.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.5))),
-                      Container(
-                          margin: EdgeInsets.only(top: 30.0),
-                          child: TextFormField(
-                            controller: _controller,
-                            minLines: 5,
-                            maxLines: 5,
-                            cursorColor: Theme.of(context).primaryColor,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              contentPadding: EdgeInsets.all(15),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0,
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              hintText: "Why do you want to learn it?",
-                              hintStyle:
-                                  TextStyle(color: Theme.of(context).hintColor),
-                              focusColor: Theme.of(context).primaryColor,
-                            ),
-                          )),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Provider.of<RegisterHandler>(context,
-                                        listen: false)
-                                    .setMissionPurpose(_controller.value.text);
-                                Navigator.of(context).pushNamed('/energy');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
+                          Image(image: AssetImage('assets/img/purpose.png')),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: Text("Mission Objectives",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headline4
+                                      ?.copyWith(
+                                          height: 1.15,
+                                          fontWeight: FontWeight.w500))),
+                          Container(
+                              margin: EdgeInsets.only(top: 15.0),
+                              child: Text(
+                                  "It's essential to define your learning goals and the purpose of your mission. Think about why you want to learn this, how you can use this ability and imagine yourself doing it to supercharge your motivation",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(height: 1.5))),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              padding: EdgeInsets.all(20.0),
+                              decoration: BoxDecoration(
+                                color: Colors.purple[50],
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0)),
                               ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("START MISSION"),
-                                Spacer(),
-                              ])))
-                    ])))));
+                              child: Text(
+                                  '💡 Learning Tip: If your motivation is extrinsic (related to a promotion or other reward), then make sure you check with an expert on whether doing this will actually get you the reward.',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(height: 1.5))),
+                          Container(
+                              margin: EdgeInsets.only(top: 30.0),
+                              child: TextFormField(
+                                controller: _controller,
+                                minLines: 5,
+                                maxLines: 5,
+                                cursorColor: Theme.of(context).primaryColor,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  contentPadding: EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2.0,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  hintText: "Why do you want to learn it?",
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                  focusColor: Theme.of(context).primaryColor,
+                                ),
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Provider.of<RegisterHandler>(context,
+                                            listen: false)
+                                        .setMissionPurpose(
+                                            _controller.value.text);
+                                    Navigator.of(context).pushNamed('/energy');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("START MISSION"),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }
 
@@ -304,93 +306,94 @@ class _StoryPageState extends State<StoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        margin: EdgeInsets.only(top: 10.0),
-                        child: Text("You are now an intrepid explorer 🚀",
-                            style: Theme.of(context)
-                                .primaryTextTheme
-                                .headline4
-                                ?.copyWith(
-                                    height: 1.15,
-                                    fontWeight: FontWeight.w500))),
-                    Container(
-                        margin: EdgeInsets.only(top: 15.0),
-                        child: Text(
-                            "Having travelled the universe for eons, you've come to realise that all resources are abundant... except for knowledge.\n\nYour species has sent you to mine planets for knowledge, and it is your job to harvest and send knowledge back home. Good luck explorer!",
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle1
-                                ?.copyWith(height: 1.5))),
-                    Container(
-                        margin: EdgeInsets.only(top: 20.0),
-                        padding: EdgeInsets.all(20.0),
-                        decoration: BoxDecoration(
-                          color: Colors.purple[50],
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        ),
-                        child: Text(
-                            '💡 Learning Tip:\nWrite action based goals, research shows that direct action greatly improves learner skill retention.\n\nFor example, instead of saying "Computer Science" say "Build an App"',
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle1
-                                ?.copyWith(height: 1.5))),
-                    Spacer(),
-                    Container(
-                        margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
-                        child: Text("Create your first mission 💎",
-                            style: Theme.of(context).textTheme.headline6)),
-                    Container(
-                        margin: EdgeInsets.only(top: 5.0),
-                        child: TextFormField(
-                          controller: _controller,
-                          cursorColor: Theme.of(context).primaryColor,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            contentPadding: EdgeInsets.all(15),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0))),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2.0,
-                                    color: Theme.of(context).primaryColor),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0))),
-                            hintText: "What do you want to learn?",
-                            hintStyle:
-                                TextStyle(color: Theme.of(context).hintColor),
-                            focusColor: Theme.of(context).primaryColor,
-                          ),
-                        )),
-                    Container(
-                        margin: EdgeInsets.only(top: 10.0),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Provider.of<RegisterHandler>(context,
-                                      listen: false)
-                                  .setMissionTitle(_controller.value.text);
-                              Navigator.of(context).pushNamed('/purpose');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor,
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                            margin: EdgeInsets.only(top: 10.0),
+                            child: Text("You are now an intrepid explorer 🚀",
+                                style: Theme.of(context)
+                                    .primaryTextTheme
+                                    .headline4
+                                    ?.copyWith(
+                                        height: 1.15,
+                                        fontWeight: FontWeight.w500))),
+                        Container(
+                            margin: EdgeInsets.only(top: 15.0),
+                            child: Text(
+                                "Having travelled the universe for eons, you've come to realise that all resources are abundant... except for knowledge.\n\nYour species has sent you to mine planets for knowledge, and it is your job to harvest and send knowledge back home. Good luck explorer!",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    ?.copyWith(height: 1.5))),
+                        Container(
+                            margin: EdgeInsets.only(top: 20.0),
+                            padding: EdgeInsets.all(20.0),
+                            decoration: BoxDecoration(
+                              color: Colors.purple[50],
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0)),
                             ),
-                            child: Row(children: <Widget>[
-                              Spacer(),
-                              Text("START MISSION"),
-                              Spacer(),
-                            ])))
-                  ],
-                ))));
+                            child: Text(
+                                '💡 Learning Tip:\nWrite action based goals, research shows that direct action greatly improves learner skill retention.\n\nFor example, instead of saying "Computer Science" say "Build an App"',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    ?.copyWith(height: 1.5))),
+                        Container(
+                            margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
+                            child: Text("Create your first mission 💎",
+                                style: Theme.of(context).textTheme.headline6)),
+                        Container(
+                            margin: EdgeInsets.only(top: 5.0),
+                            child: TextFormField(
+                              controller: _controller,
+                              cursorColor: Theme.of(context).primaryColor,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                filled: true,
+                                fillColor: Colors.grey[200],
+                                contentPadding: EdgeInsets.all(15),
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2.0,
+                                        color: Theme.of(context).primaryColor),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                hintText: "What do you want to learn?",
+                                hintStyle: TextStyle(
+                                    color: Theme.of(context).hintColor),
+                                focusColor: Theme.of(context).primaryColor,
+                              ),
+                            )),
+                        Container(
+                            margin: EdgeInsets.only(top: 10.0),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  Provider.of<RegisterHandler>(context,
+                                          listen: false)
+                                      .setMissionTitle(_controller.value.text);
+                                  Navigator.of(context).pushNamed('/purpose');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Theme.of(context).primaryColor,
+                                ),
+                                child: Row(children: <Widget>[
+                                  Spacer(),
+                                  Text("START MISSION"),
+                                  Spacer(),
+                                ])))
+                      ],
+                    )))));
   }
 }
 
@@ -573,6 +576,8 @@ class _MotivationPageState extends State<MotivationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final name = ModalRoute.of(context)!.settings.arguments as String;
+
     return Material(
         child: SafeArea(
             child: Container(
@@ -585,7 +590,8 @@ class _MotivationPageState extends State<MotivationPage> {
                       Image(image: AssetImage('assets/img/hard.png')),
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
-                          child: Text("Hey Shan, we know learning can be hard.",
+                          child: Text(
+                              "Hey ${name}, we know learning can be hard.",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
@@ -718,81 +724,87 @@ class _NamePageState extends State<NamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text("This the the first step to a better you",
-                          style: Theme.of(context)
-                              .primaryTextTheme
-                              .headline4
-                              ?.copyWith(
-                                  height: 1.15, fontWeight: FontWeight.w500)),
-                      Container(
-                          margin: EdgeInsets.only(top: 15.0),
-                          child: Text(
-                              "At Axiom, we've spent a lot of time thinking about how to help people become the best versions of themselves. We use various cognitive strategies to help you learn in the best way possible, so that you grow everyday.",
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("This the the first step to a better you",
                               style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.5))),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: Image(
-                              image: AssetImage('assets/img/explore.png'))),
-                      Spacer(),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: Text("So, what is your name?",
-                              style: Theme.of(context).textTheme.headline6)),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: TextFormField(
-                            controller: _controller,
-                            cursorColor: Theme.of(context).primaryColor,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              contentPadding: EdgeInsets.all(15),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0,
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              hintText: "Jane Doe",
-                              hintStyle:
-                                  TextStyle(color: Theme.of(context).hintColor),
-                              focusColor: Theme.of(context).primaryColor,
-                            ),
-                          )),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                // Commit the name to the register state
-                                Provider.of<RegisterHandler>(context,
-                                        listen: false)
-                                    .setName(_controller.value.text);
-                                Navigator.of(context).pushNamed('/motivation');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("LET'S GO!"),
-                                Spacer(),
-                              ])))
-                    ]))));
+                                  .primaryTextTheme
+                                  .headline4
+                                  ?.copyWith(
+                                      height: 1.15,
+                                      fontWeight: FontWeight.w500)),
+                          Container(
+                              margin: EdgeInsets.only(top: 15.0),
+                              child: Text(
+                                  "At Axiom, we've spent a lot of time thinking about how to help people become the best versions of themselves. We use various cognitive strategies to help you learn in the best way possible, so that you grow everyday.",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(height: 1.5))),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: Image(
+                                  image: AssetImage('assets/img/explore.png'))),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: Text("So, what is your name?",
+                                  style:
+                                      Theme.of(context).textTheme.headline6)),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: TextFormField(
+                                controller: _controller,
+                                cursorColor: Theme.of(context).primaryColor,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  contentPadding: EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2.0,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0))),
+                                  hintText: "Jane Doe",
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                  focusColor: Theme.of(context).primaryColor,
+                                ),
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    // Commit the name to the register state
+                                    Provider.of<RegisterHandler>(context,
+                                            listen: false)
+                                        .setName(_controller.value.text);
+                                    Navigator.of(context).pushNamed(
+                                        '/motivation',
+                                        arguments: _controller.value.text);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("LET'S GO!"),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }

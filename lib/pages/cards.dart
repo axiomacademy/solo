@@ -96,7 +96,16 @@ class _CardsPageState extends State<CardsPage> {
                                       elevation: 4.0,
                                       primary: Colors.white,
                                       fixedSize: Size(100.0, 100.0)),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    int newIndex = index + 1;
+                                    if (newIndex >= widget.cards.length) {
+                                      Navigator.of(context).pop();
+                                    } else {
+                                      setState(() {
+                                        index = newIndex;
+                                      });
+                                    }
+                                  },
                                   child: Icon(Icons.close,
                                       color: Colors.red, size: 50),
                                 ),
@@ -105,7 +114,16 @@ class _CardsPageState extends State<CardsPage> {
                                       elevation: 4.0,
                                       primary: Colors.white,
                                       fixedSize: Size(100.0, 100.0)),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    int newIndex = index + 1;
+                                    if (newIndex >= widget.cards.length) {
+                                      Navigator.of(context).pop();
+                                    } else {
+                                      setState(() {
+                                        index = newIndex;
+                                      });
+                                    }
+                                  },
                                   child: Icon(Icons.check,
                                       color: Colors.green, size: 50),
                                 )

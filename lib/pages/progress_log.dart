@@ -96,48 +96,51 @@ class _ProgressTextViewState extends State<ProgressTextView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.all(5.0),
-                                height: 10,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0)),
-                                    color: Theme.of(context).primaryColor))),
-                      ]),
-                      Container(
-                          padding: EdgeInsets.only(top: 50.0),
-                          child: Text("Show off your progress 🚀",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline2
-                                  ?.copyWith(height: 1.15))),
-                      Expanded(
-                          child: Container(
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(30.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(3.0)),
+                                        color:
+                                            Theme.of(context).primaryColor))),
+                          ]),
+                          Container(
+                              padding: EdgeInsets.only(top: 20.0),
+                              child: Text("Show off your progress 🚀",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headline2
+                                      ?.copyWith(height: 1.15))),
+                          Container(
                               margin: EdgeInsets.only(top: 20.0),
                               child: TextFormField(
                                 controller: _controller,
@@ -162,35 +165,36 @@ class _ProgressTextViewState extends State<ProgressTextView> {
                                       ?.copyWith(
                                           height: 1.5, color: Colors.grey[500]),
                                 ),
-                              ))),
-                      Container(
-                          margin: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                Provider.of<ProgressLogHandler>(context,
-                                        listen: false)
-                                    .setText(_controller.value.text);
+                              )),
+                          Container(
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    Provider.of<ProgressLogHandler>(context,
+                                            listen: false)
+                                        .setText(_controller.value.text);
 
-                                try {
-                                  await Provider.of<ProgressLogHandler>(context,
-                                          listen: false)
-                                      .createLog();
-                                } catch (e) {
-                                  // Do whatever error showing here
-                                  print("HII");
-                                } finally {
-                                  widget.endLogFlow();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("Submit Log".toUpperCase()),
-                                Spacer(),
-                              ])))
-                    ]))));
+                                    try {
+                                      await Provider.of<ProgressLogHandler>(
+                                              context,
+                                              listen: false)
+                                          .createLog();
+                                    } catch (e) {
+                                      // Do whatever error showing here
+                                      print("HII");
+                                    } finally {
+                                      widget.endLogFlow();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Spacer(),
+                                    Text("Submit Log".toUpperCase()),
+                                    Spacer(),
+                                  ])))
+                        ])))));
   }
 }
 
@@ -206,8 +210,8 @@ class _ProgressLevelViewState extends State<ProgressLevelView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
+    return Scaffold(
+        body: SafeArea(
             child: Container(
                 padding: EdgeInsets.all(30.0),
                 child: Column(
@@ -429,8 +433,8 @@ class _MissionSelectViewState extends State<MissionSelectView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
+    return Scaffold(
+        body: SafeArea(
             child: Container(
                 padding: EdgeInsets.all(30.0),
                 child: Column(

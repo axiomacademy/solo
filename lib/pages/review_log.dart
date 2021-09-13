@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -169,7 +170,6 @@ class _MissionCardsAddViewState extends State<MissionCardsAddView> {
                           margin: EdgeInsets.only(top: 0.0),
                           child: ElevatedButton(
                               onPressed: () async {
-                                await _createReviewCard(missionId);
                                 Navigator.of(context).pop();
                               },
                               style: ElevatedButton.styleFrom(
@@ -206,6 +206,8 @@ class MissionCardsView extends StatefulWidget {
 class _MissionCardsViewState extends State<MissionCardsView> {
   late CollectionReference<Mission> _missionRef;
   late CollectionReference<ReviewCard> _cardsRef;
+
+  bool loadingReview = false;
 
   @override
   void initState() {
@@ -404,53 +406,74 @@ class _MissionCardsViewState extends State<MissionCardsView> {
   }
 
   Widget _buildReviewButton(String missionId) {
-    return GestureDetector(
-        onTap: () async {
-          Navigator.of(context).push(CardsPage.route(await _getReview()));
-        },
-        child: Container(
-            height: 120,
-            padding: EdgeInsets.all(30.0),
-            margin: EdgeInsets.only(top: 20.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.all(
-                Radius.circular(15.0),
+    if (loadingReview == false) {
+      return GestureDetector(
+          onTap: () async {
+            setState(() {
+              loadingReview = false;
+            });
+            Navigator.of(context).push(CardsPage.route(await _getReview()));
+          },
+          child: Container(
+              height: 120,
+              padding: EdgeInsets.all(30.0),
+              margin: EdgeInsets.only(top: 20.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(15.0),
+                ),
               ),
+              child: Center(
+                  child:
+                      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Text("Review mission cards",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.w500)),
+                StreamBuilder<QuerySnapshot>(
+                    stream: _cardsRef
+                        .where('mission', isEqualTo: missionId)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text("Something went wrong");
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Loading");
+                      }
+
+                      int count = snapshot.data!.size;
+
+                      return Container(
+                          margin: EdgeInsets.only(top: 5.0),
+                          child: Text("$count total cards",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  ?.copyWith(color: Colors.white)));
+                    })
+              ]))));
+    } else {
+      return Container(
+          height: 120,
+          padding: EdgeInsets.all(30.0),
+          margin: EdgeInsets.only(top: 20.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.all(
+              Radius.circular(15.0),
             ),
-            child: Center(
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Text("Review mission cards",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.w500)),
-              StreamBuilder<QuerySnapshot>(
-                  stream: _cardsRef
-                      .where('mission', isEqualTo: missionId)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text("Something went wrong");
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
-                    }
-
-                    int count = snapshot.data!.size;
-
-                    return Container(
-                        margin: EdgeInsets.only(top: 5.0),
-                        child: Text("$count total cards",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle1
-                                ?.copyWith(color: Colors.white)));
-                  })
-            ]))));
+          ),
+          child: Center(
+              child: SpinKitThreeBounce(
+            color: Colors.white,
+            size: 50.0,
+          )));
+    }
   }
 
   Future<List> _getReview() async {

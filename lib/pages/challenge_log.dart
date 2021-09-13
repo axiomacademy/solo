@@ -93,8 +93,8 @@ class _ChallengeCreateViewState extends State<ChallengeCreateView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
+    return Scaffold(
+        body: SafeArea(
             child: SingleChildScrollView(
                 child: Container(
                     padding: EdgeInsets.all(30.0),

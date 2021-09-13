@@ -33,14 +33,11 @@ class _AppState extends State<App> {
   }
 
   Future<void> initPlatformState() async {
-    print("HII");
     await Purchases.setDebugLogsEnabled(true);
     await Purchases.setup("QgTjLzQksKRxMxLRvVmoMqwPdNBzUGHG");
-    print("HII");
 
     try {
       Offerings offerings = await Purchases.getOfferings();
-      print('HI2');
       print(offerings.all);
     } catch (e) {
       // optional error handling

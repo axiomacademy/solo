@@ -66,6 +66,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _returnToWelcome() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(WelcomePage.route());
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -84,6 +89,12 @@ class _HomePageState extends State<HomePage> {
               color: Theme.of(context).accentColor,
               size: 50.0,
             ))));
+          }
+
+          // If the learner doesn't exist, then logout
+          if (snapshot.data!.docs.length == 0) {
+            _returnToWelcome();
+            return Container();
           }
 
           Learner learner = snapshot.data!.docs.single.data() as Learner;
@@ -239,7 +250,32 @@ class _JourneyPageState extends State<JourneyPage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
+            return Container(
+                child: Center(
+                    child: SpinKitThreeBounce(
+              color: Theme.of(context).accentColor,
+              size: 50.0,
+            )));
+          }
+
+          if (snapshot.data!.docs.length == 0) {
+            return Container(
+                padding: EdgeInsets.all(20.0),
+                margin: EdgeInsets.only(right: 10.0, top: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10.0),
+                  ),
+                ),
+                child: Center(
+                  child: Text("Keep track of your learning by creating a log ✨",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1
+                          ?.copyWith(color: Colors.grey[600])),
+                ));
           }
 
           List<Log> logs = snapshot.data!.docs.map((DocumentSnapshot document) {
@@ -365,6 +401,8 @@ class _LogPageState extends State<LogPage> {
   late CollectionReference<Mission> _missionRef;
   late CollectionReference<ReviewCard> _cardRef;
 
+  bool loadingReview = false;
+
   @override
   void initState() {
     // Setting up stream from firebase
@@ -417,12 +455,8 @@ class _LogPageState extends State<LogPage> {
       padding: EdgeInsets.all(30.0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
           Widget>[
-        GestureDetector(
-            onTap: () async {
-              Navigator.of(context)
-                  .push(CardsPage.route(await _getDailyReview()));
-            },
-            child: Container(
+        (loadingReview == true)
+            ? Container(
                 height: 400,
                 padding: EdgeInsets.all(30.0),
                 decoration: BoxDecoration(
@@ -432,26 +466,49 @@ class _LogPageState extends State<LogPage> {
                   ),
                 ),
                 child: Center(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                      Text("Review your knowledge daily",
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline4
-                              ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500)),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: Text("You have 10 cards left today",
+                    child: SpinKitThreeBounce(
+                  color: Colors.white,
+                  size: 50.0,
+                )))
+            : GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    loadingReview = true;
+                  });
+                  Navigator.of(context)
+                      .push(CardsPage.route(await _getDailyReview()));
+                },
+                child: Container(
+                    height: 400,
+                    padding: EdgeInsets.all(30.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15.0),
+                      ),
+                    ),
+                    child: Center(
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                          Text("Review your knowledge daily",
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .subtitle1
-                                  ?.copyWith(color: Colors.white)))
-                    ])))),
+                                  .headline4
+                                  ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500)),
+                          Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: Text(
+                                  "Review your cards and retain knowledge like a pro",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(color: Colors.white)))
+                        ])))),
         Container(
           margin: EdgeInsets.only(top: 20.0),
           child: Text("Challenges",
