@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import 'dart:math';
 
@@ -22,6 +24,8 @@ import 'recall_log.dart';
 import 'review_log.dart';
 import 'challenge_complete.dart';
 import 'cards.dart';
+
+import '../services/energy_service.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -261,7 +265,7 @@ class _JourneyPageState extends State<JourneyPage> {
           if (snapshot.data!.docs.length == 0) {
             return Container(
                 padding: EdgeInsets.all(20.0),
-                margin: EdgeInsets.only(right: 10.0, top: 20.0),
+                margin: EdgeInsets.only(top: 20.0),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.all(
@@ -738,10 +742,10 @@ class _ExplorePageState extends State<ExplorePage> {
   late Stream<QuerySnapshot<Learner>> _learnerStream;
   late CollectionReference<Planet> _planetRef;
 
+  User user = FirebaseAuth.instance.currentUser!;
+
   @override
   void initState() {
-    // Setting up stream from firebase
-    User user = FirebaseAuth.instance.currentUser!;
     _planetRef =
         FirebaseFirestore.instance.collection('planets').withConverter<Planet>(
               fromFirestore: (snapshot, _) => Planet.fromJson(snapshot.data()!),
@@ -834,6 +838,14 @@ class _ExplorePageState extends State<ExplorePage> {
                                         margin: EdgeInsets.only(top: 20.0),
                                         child: ListTile(
                                           contentPadding: EdgeInsets.all(10.0),
+                                          onTap: () async {
+                                            try {
+                                              EnergyService.buyEnergyWithCoins(
+                                                  user.email!);
+                                            } on NotEnoughCoins catch (_) {
+                                              print("GIVE AN ERROR");
+                                            }
+                                          },
                                           tileColor: Colors.grey[100],
                                           shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
@@ -856,6 +868,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                         margin: EdgeInsets.only(top: 10.0),
                                         child: ListTile(
                                           contentPadding: EdgeInsets.all(10.0),
+                                          onTap: _purchaseEnergy,
                                           tileColor: Colors.grey[100],
                                           shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
@@ -899,5 +912,21 @@ class _ExplorePageState extends State<ExplorePage> {
                 return Container();
               });
         });
+  }
+
+  void _purchaseEnergy() async {
+    Offerings offerings = await Purchases.getOfferings();
+    if (offerings.current != null) {
+      try {
+        PurchaserInfo purchaserInfo =
+            await Purchases.purchasePackage(offerings.current!.lifetime!);
+        await EnergyService.buyEnergy(user.email!);
+      } on PlatformException catch (e) {
+        var errorCode = PurchasesErrorHelper.getErrorCode(e);
+        if (errorCode != PurchasesErrorCode.purchaseCancelledError) {
+          print(e);
+        }
+      }
+    }
   }
 }

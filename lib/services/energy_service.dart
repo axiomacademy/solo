@@ -5,6 +5,8 @@ import '../models/models.dart';
 
 class NotEnoughEnergy extends Error {}
 
+class NotEnoughCoins extends Error {}
+
 class EnergyService {
   static final learnerRef =
       FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
@@ -17,6 +19,24 @@ class EnergyService {
             fromFirestore: (snapshot, _) => Planet.fromJson(snapshot.data()!),
             toFirestore: (planet, _) => planet.toJson(),
           );
+
+  static Future<void> buyEnergyWithCoins(String user) async {
+    final doc = await learnerRef.doc(user).get();
+    final l = doc.data()!;
+
+    if (l.coins < 100) throw NotEnoughCoins();
+
+    await learnerRef
+        .doc(user)
+        .update({'energy': l.energy + 100, 'coins': l.coins - 100});
+  }
+
+  static Future<void> buyEnergy(String user) async {
+    final doc = await learnerRef.doc(user).get();
+    final l = doc.data()!;
+
+    await learnerRef.doc(user).update({'energy': l.energy + 100});
+  }
 
   static Future<void> completeLog(String user) async {
     final doc = await learnerRef.doc(user).get();
