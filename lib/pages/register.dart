@@ -130,7 +130,7 @@ class EnergyPage extends StatelessWidget {
                       Container(
                           margin: EdgeInsets.only(top: 15.0, bottom: 10.0),
                           child: Text(
-                              "You need energy to mine planets. As you learn and mine more knowledge from a planet, you earn coins. And you can use coins to treat yourself with Starbucks, buy cool trophies and earn other rewards!",
+                              "You need energy to mine planets. As you learn and mine more knowledge from a planet, you earn coins. And you can use coins to buy more energy, treat yourself and earn other rewards!",
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
@@ -139,37 +139,31 @@ class EnergyPage extends StatelessWidget {
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
                           child: Text(
-                              "Invest in yourself, and charge your ship with energy. Don't worry you can start with as little as 5 dollars which gives you 50 energy points! This helps you stay on track and remain motivated throughout your learning journey.",
+                              "Invest in yourself, and charge your ship with energy. This helps you stay on track and remain motivated throughout your learning journey.",
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
                                   ?.copyWith(height: 1.6))),
                       Container(
-                          margin: EdgeInsets.only(top: 30.0),
-                          child: TextFormField(
-                            cursorColor: Theme.of(context).primaryColor,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              suffixText: "SGD",
-                              fillColor: Colors.grey[200],
-                              contentPadding: EdgeInsets.all(15),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
+                        margin: EdgeInsets.only(top: 30.0),
+                        child: Container(
+                            margin: EdgeInsets.only(top: 10.0),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.all(10.0),
+                              onTap: _purchaseEnergy,
+                              tileColor: Colors.grey[100],
+                              shape: RoundedRectangleBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10.0))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0,
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              hintText: "5",
-                              hintStyle:
-                                  TextStyle(color: Theme.of(context).hintColor),
-                              focusColor: Theme.of(context).primaryColor,
-                            ),
-                          )),
+                              leading: Icon(Icons.auto_fix_high,
+                                  size: 30.0,
+                                  color: Theme.of(context).primaryColor),
+                              title: Text("Charge your ship",
+                                  style: Theme.of(context).textTheme.headline6),
+                              subtitle: Text("Buy 100 energy",
+                                  style: Theme.of(context).textTheme.subtitle1),
+                            )),
+                      ),
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
@@ -188,6 +182,22 @@ class EnergyPage extends StatelessWidget {
                                 Spacer(),
                               ])))
                     ])))));
+  }
+
+  void _purchaseEnergy() async {
+    Offerings offerings = await Purchases.getOfferings();
+    if (offerings.current != null) {
+      try {
+        PurchaserInfo purchaserInfo =
+            await Purchases.purchasePackage(offerings.current!.lifetime!);
+        await EnergyService.buyEnergy(user.email!);
+      } on PlatformException catch (e) {
+        var errorCode = PurchasesErrorHelper.getErrorCode(e);
+        if (errorCode != PurchasesErrorCode.purchaseCancelledError) {
+          print(e);
+        }
+      }
+    }
   }
 }
 
