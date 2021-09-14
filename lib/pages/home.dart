@@ -23,6 +23,7 @@ import 'challenge_log.dart';
 import 'recall_log.dart';
 import 'review_log.dart';
 import 'challenge_complete.dart';
+import 'mission.dart';
 import 'cards.dart';
 
 import '../services/energy_service.dart';
@@ -200,6 +201,7 @@ class _JourneyPageState extends State<JourneyPage> {
         );
     _missionStream = FirebaseFirestore.instance
         .collection('learners/${user.email}/missions')
+        .where('completed', isEqualTo: false)
         .withConverter<Mission>(
           fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
           toFirestore: (mission, _) => mission.toJson(),
@@ -221,16 +223,28 @@ class _JourneyPageState extends State<JourneyPage> {
   Widget build(BuildContext context) {
     return Material(
         child: SafeArea(
-            child: Container(
+            child: SingleChildScrollView(
+                child: Container(
       padding: EdgeInsets.all(30.0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
-          child: Text("Active Missions",
+            child: Row(children: <Widget>[
+          Text("Active Missions",
               style: Theme.of(context)
                   .textTheme
                   .headline5
                   ?.copyWith(fontSize: 24)),
-        ),
+          Spacer(),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(MissionCreatePage.route());
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Theme.of(context).primaryColor,
+            ),
+            child: Text("Add".toUpperCase()),
+          )
+        ])),
         _buildMissions(),
         Container(
           margin: EdgeInsets.only(top: 30.0),
@@ -240,9 +254,9 @@ class _JourneyPageState extends State<JourneyPage> {
                   .headline5
                   ?.copyWith(fontSize: 24)),
         ),
-        Expanded(child: _buildLogActivity())
+        SizedBox(height: 400, child: _buildLogActivity())
       ]),
-    )));
+    ))));
   }
 
   Widget _buildLogActivity() {
@@ -344,50 +358,86 @@ class _JourneyPageState extends State<JourneyPage> {
             return Text("Loading");
           }
 
+          if (snapshot.data!.docs.length == 0) {
+            return Container(
+                height: 120,
+                width: MediaQuery.of(context).size.width - 60,
+                padding: EdgeInsets.all(20.0),
+                margin: EdgeInsets.only(top: 10.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10.0),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                      "Create a mission, to start becoming the best version of yourself 🦸",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1
+                          ?.copyWith(color: Colors.grey[600])),
+                ));
+          }
+
           return Column(
               mainAxisSize: MainAxisSize.min,
               children: snapshot.data!.docs.map((DocumentSnapshot document) {
                 Mission mission = document.data()! as Mission;
-                return Container(
-                    margin: EdgeInsets.only(top: 10.0),
-                    padding: EdgeInsets.all(30.0),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15.0),
-                      ),
-                    ),
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(children: <Widget>[
-                            Text(mission.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(color: Colors.white)),
-                            Spacer(),
-                            Text("54 logs".toUpperCase(),
-                                style: Theme.of(context)
-                                    .primaryTextTheme
-                                    .overline
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white)),
-                          ]),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                mission.purpose,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    ?.copyWith(color: Colors.white),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ))
-                        ]));
+                return GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SafeArea(
+                                child: ListView(shrinkWrap: true, children: [
+                              ListTile(
+                                onTap: () {
+                                  _missionRef
+                                      .doc(document.id)
+                                      .update({'completed': true});
+                                  Navigator.of(context).pop();
+                                },
+                                leading: Icon(Icons.clear),
+                                title: Text('End Mission'),
+                              )
+                            ]));
+                          });
+                    },
+                    child: Container(
+                        margin: EdgeInsets.only(top: 10.0),
+                        padding: EdgeInsets.all(30.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.0),
+                          ),
+                        ),
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(children: <Widget>[
+                                Text(mission.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(color: Colors.white)),
+                                Spacer(),
+                              ]),
+                              Container(
+                                  margin: EdgeInsets.only(top: 10.0),
+                                  child: Text(
+                                    mission.purpose,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        ?.copyWith(color: Colors.white),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ))
+                            ])));
               }).toList());
         });
   }

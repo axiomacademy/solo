@@ -331,6 +331,7 @@ class _MissionSelectViewState extends State<MissionSelectView> {
     User user = FirebaseAuth.instance.currentUser!;
     _missionStream = FirebaseFirestore.instance
         .collection('learners/${user.email}/missions')
+        .where('completed', isEqualTo: false)
         .withConverter<Mission>(
           fromFirestore: (snapshot, _) => Mission.fromJson(snapshot.data()!),
           toFirestore: (mission, _) => mission.toJson(),
@@ -425,14 +426,6 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                                           .textTheme
                                                           .headline6),
                                                   Spacer(),
-                                                  Text("54 logs".toUpperCase(),
-                                                      style: Theme.of(context)
-                                                          .primaryTextTheme
-                                                          .overline
-                                                          ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          )),
                                                 ]),
                                                 Container(
                                                     margin: EdgeInsets.only(

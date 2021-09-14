@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:selectable_container/selectable_container.dart';
 
@@ -8,73 +7,52 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:purchases_flutter/purchases_flutter.dart';
-
 import '../models/models.dart';
-import 'welcome.dart';
 import './home.dart';
 import '../theme.dart';
 import '../services/energy_service.dart';
 
-class RegisterPage extends StatefulWidget {
-  RegisterPage({Key? key}) : super(key: key);
+class MissionCreatePage extends StatefulWidget {
+  MissionCreatePage({Key? key}) : super(key: key);
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => RegisterPage());
+    return MaterialPageRoute<void>(builder: (_) => MissionCreatePage());
   }
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  _MissionCreatePageState createState() => _MissionCreatePageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _MissionCreatePageState extends State<MissionCreatePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    return Provider<RegisterHandler>(
-        create: (_) => RegisterHandler(),
+    return Provider<MissionCreateHandler>(
+        create: (_) => MissionCreateHandler(),
         child: MaterialApp(
           navigatorKey: _navigatorKey,
           theme: buildTheme(),
           routes: {
-            '/': (context) => NamePage(),
+            '/': (context) => MissionNamePage(),
             '/motivation': (context) => MotivationPage(),
             '/motivation/self': (context) => MotivationSelfPage(),
             '/motivation/career': (context) => MotivationCareerPage(),
             '/motivation/switch': (context) => MotivationSwitchPage(),
-            '/story': (context) => StoryPage(),
-            '/purpose': (context) => PurposePage(),
-            '/energy': (context) =>
-                EnergyPage(endRegisterFlow: _finishRegistration)
+            '/purpose': (context) => PurposePage(endFlow: _finish),
           },
         ));
   }
 
-  void _finishRegistration() {
+  void _finish() {
     Navigator.of(context).pop();
     Navigator.of(context).push(HomePage.route());
   }
 }
 
-class RegisterHandler {
-  String _name = 'Learner';
+class MissionCreateHandler {
   String _missionTitle = '';
   String _missionPurpose = '';
-
-  final learnerRef =
-      FirebaseFirestore.instance.collection('learners').withConverter<Learner>(
-            fromFirestore: (snapshot, _) => Learner.fromJson(snapshot.data()!),
-            toFirestore: (learner, _) => learner.toJson(),
-          );
-
-  String get getName {
-    return _name;
-  }
-
-  void setName(String name) {
-    _name = name;
-  }
 
   void setMissionTitle(String missionTitle) {
     _missionTitle = missionTitle;
@@ -84,17 +62,9 @@ class RegisterHandler {
     _missionPurpose = missionPurpose;
   }
 
-  Future<void> createUser() async {
+  Future<void> createMission() async {
     // Create learner
     User? user = FirebaseAuth.instance.currentUser!;
-    await learnerRef.doc(user.email).set(Learner(
-        email: user.email!,
-        name: _name,
-        energy: 100,
-        coins: 0,
-        mined: 0,
-        currentPlanet: "earth"));
-
     // Create learner missions
     final missionRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/missions')
@@ -108,88 +78,10 @@ class RegisterHandler {
   }
 }
 
-class EnergyPage extends StatelessWidget {
-  EnergyPage({Key? key, required this.endRegisterFlow}) : super(key: key);
-
-  final VoidCallback endRegisterFlow;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Container(
-                padding: EdgeInsets.all(30.0),
-                child: SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: Text("You need energy ⚡",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline4
-                                  ?.copyWith(
-                                      height: 1.15,
-                                      fontWeight: FontWeight.w500))),
-                      Container(
-                          margin: EdgeInsets.only(top: 15.0, bottom: 10.0),
-                          child: Text(
-                              "You need energy to mine planets. As you learn and mine more knowledge from a planet, you earn coins. And you can use coins to buy more energy, treat yourself and earn other rewards!",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.6))),
-                      Image(image: AssetImage('assets/img/convert.png')),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: Text(
-                              "Invest in yourself, and charge your ship with energy. This helps you stay on track and remain motivated throughout your learning journey.",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  ?.copyWith(height: 1.6))),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                await _purchaseEnergy(context);
-                                Provider.of<RegisterHandler>(context,
-                                        listen: false)
-                                    .createUser();
-                                endRegisterFlow();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                              child: Row(children: <Widget>[
-                                Spacer(),
-                                Text("CHARGE SHIP"),
-                                Spacer(),
-                              ])))
-                    ])))));
-  }
-
-  Future<void> _purchaseEnergy(BuildContext context) async {
-    Offerings offerings = await Purchases.getOfferings();
-    if (offerings.current != null) {
-      try {
-        PurchaserInfo purchaserInfo =
-            await Purchases.purchasePackage(offerings.current!.lifetime!);
-      } on PlatformException catch (e) {
-        var errorCode = PurchasesErrorHelper.getErrorCode(e);
-        if (errorCode != PurchasesErrorCode.purchaseCancelledError) {
-          print(e);
-        }
-
-        Navigator.of(context).pushReplacement(WelcomePage.route());
-      }
-    }
-  }
-}
-
 class PurposePage extends StatefulWidget {
-  PurposePage({Key? key}) : super(key: key);
+  PurposePage({Key? key, required this.endFlow}) : super(key: key);
+
+  final VoidCallback endFlow;
 
   @override
   _PurposePageState createState() => _PurposePageState();
@@ -273,11 +165,14 @@ class _PurposePageState extends State<PurposePage> {
                               margin: EdgeInsets.only(top: 10.0),
                               child: ElevatedButton(
                                   onPressed: () {
-                                    Provider.of<RegisterHandler>(context,
+                                    Provider.of<MissionCreateHandler>(context,
                                             listen: false)
                                         .setMissionPurpose(
                                             _controller.value.text);
-                                    Navigator.of(context).pushNamed('/energy');
+                                    Provider.of<MissionCreateHandler>(context,
+                                            listen: false)
+                                        .createMission();
+                                    widget.endFlow();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     primary: Theme.of(context).primaryColor,
@@ -291,14 +186,14 @@ class _PurposePageState extends State<PurposePage> {
   }
 }
 
-class StoryPage extends StatefulWidget {
-  StoryPage({Key? key}) : super(key: key);
+class MissionNamePage extends StatefulWidget {
+  MissionNamePage({Key? key}) : super(key: key);
 
   @override
-  _StoryPageState createState() => _StoryPageState();
+  _MissionNamePageState createState() => _MissionNamePageState();
 }
 
-class _StoryPageState extends State<StoryPage> {
+class _MissionNamePageState extends State<MissionNamePage> {
   final _controller = TextEditingController();
 
   @override
@@ -313,7 +208,8 @@ class _StoryPageState extends State<StoryPage> {
                       children: [
                         Container(
                             margin: EdgeInsets.only(top: 10.0),
-                            child: Text("You are now an intrepid explorer 🚀",
+                            child: Text(
+                                "Exciting, you're starting a new mission 🚀",
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .headline4
@@ -323,7 +219,7 @@ class _StoryPageState extends State<StoryPage> {
                         Container(
                             margin: EdgeInsets.only(top: 15.0),
                             child: Text(
-                                "Having travelled the universe for eons, you've come to realise that all resources are abundant... except for knowledge.\n\nYour species has sent you to mine planets for knowledge, and it is your job to harvest and send knowledge back home. Good luck explorer!",
+                                "Starting a new mission can be stressful, we'll help guide you along your goal-setting process. Remember, if you aim at nothing, you won't hit anything",
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
@@ -376,10 +272,11 @@ class _StoryPageState extends State<StoryPage> {
                             margin: EdgeInsets.only(top: 10.0),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  Provider.of<RegisterHandler>(context,
+                                  Provider.of<MissionCreateHandler>(context,
                                           listen: false)
                                       .setMissionTitle(_controller.value.text);
-                                  Navigator.of(context).pushNamed('/purpose');
+                                  Navigator.of(context)
+                                      .pushNamed('/motivation');
                                 },
                                 style: ElevatedButton.styleFrom(
                                   primary: Theme.of(context).primaryColor,
@@ -432,7 +329,7 @@ class MotivationSwitchPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).pushNamed('/story');
+                                Navigator.of(context).pushNamed('/purpose');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -492,7 +389,7 @@ class MotivationCareerPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).pushNamed('/story');
+                                Navigator.of(context).pushNamed('/purpose');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -545,7 +442,7 @@ class MotivationSelfPage extends StatelessWidget {
                           margin: EdgeInsets.only(top: 10.0),
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).pushNamed('/story');
+                                Navigator.of(context).pushNamed('/purpose');
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
@@ -573,8 +470,6 @@ class _MotivationPageState extends State<MotivationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final name = ModalRoute.of(context)!.settings.arguments as String;
-
     return Material(
         child: SafeArea(
             child: Container(
@@ -587,8 +482,7 @@ class _MotivationPageState extends State<MotivationPage> {
                       Image(image: AssetImage('assets/img/hard.png')),
                       Container(
                           margin: EdgeInsets.only(top: 10.0),
-                          child: Text(
-                              "Hey ${name}, we know learning can be hard.",
+                          child: Text("We know learning can be hard.",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
@@ -699,109 +593,5 @@ class _MotivationPageState extends State<MotivationPage> {
                                 Spacer(),
                               ])))
                     ])))));
-  }
-}
-
-class NamePage extends StatefulWidget {
-  NamePage({Key? key}) : super(key: key);
-
-  @override
-  _NamePageState createState() => _NamePageState();
-}
-
-class _NamePageState extends State<NamePage> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            child: SingleChildScrollView(
-                child: Container(
-                    padding: EdgeInsets.all(30.0),
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text("This the the first step to a better you",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline4
-                                  ?.copyWith(
-                                      height: 1.15,
-                                      fontWeight: FontWeight.w500)),
-                          Container(
-                              margin: EdgeInsets.only(top: 15.0),
-                              child: Text(
-                                  "At Axiom, we've spent a lot of time thinking about how to help people become the best versions of themselves. We use various cognitive strategies to help you learn in the best way possible, so that you grow everyday.",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1
-                                      ?.copyWith(height: 1.5))),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              child: Image(
-                                  image: AssetImage('assets/img/explore.png'))),
-                          Container(
-                              margin: EdgeInsets.only(top: 20.0),
-                              child: Text("So, what is your name?",
-                                  style:
-                                      Theme.of(context).textTheme.headline6)),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              child: TextFormField(
-                                controller: _controller,
-                                cursorColor: Theme.of(context).primaryColor,
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  contentPadding: EdgeInsets.all(15),
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 2.0,
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  hintText: "Jane Doe",
-                                  hintStyle: TextStyle(
-                                      color: Theme.of(context).hintColor),
-                                  focusColor: Theme.of(context).primaryColor,
-                                ),
-                              )),
-                          Container(
-                              margin: EdgeInsets.only(top: 10.0),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    // Commit the name to the register state
-                                    Provider.of<RegisterHandler>(context,
-                                            listen: false)
-                                        .setName(_controller.value.text);
-                                    Navigator.of(context).pushNamed(
-                                        '/motivation',
-                                        arguments: _controller.value.text);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Theme.of(context).primaryColor,
-                                  ),
-                                  child: Row(children: <Widget>[
-                                    Spacer(),
-                                    Text("LET'S GO!"),
-                                    Spacer(),
-                                  ])))
-                        ])))));
   }
 }

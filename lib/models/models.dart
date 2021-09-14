@@ -115,17 +115,21 @@ class Log {
 class Mission {
   final String title;
   final String purpose;
+  final bool completed;
 
-  Mission({required this.title, required this.purpose});
+  Mission(
+      {required this.title, required this.purpose, required this.completed});
 
   Mission.fromJson(Map<String, Object?> json)
       : title = json['title']! as String,
-        purpose = json['purpose']! as String;
+        purpose = json['purpose']! as String,
+        completed = json['completed']! as bool;
 
   Map<String, Object?> toJson() {
     return {
       'title': title,
       'purpose': purpose,
+      'completed': completed,
     };
   }
 }
