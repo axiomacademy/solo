@@ -75,6 +75,13 @@ class EnergyService {
     });
   }
 
+  static Future<void> checkEnergy(String user) async {
+    final doc = await learnerRef.doc(user).get();
+    final l = doc.data()!;
+
+    if (l.energy < 5) throw NotEnoughEnergy;
+  }
+
   static Future<bool> completeChallenge(String user) async {
     final doc = await learnerRef.doc(user).get();
     final l = doc.data()!;

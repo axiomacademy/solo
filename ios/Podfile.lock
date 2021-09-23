@@ -465,6 +465,8 @@ PODS:
   - PurchasesCoreSwift (3.12.3)
   - PurchasesHybridCommon (1.9.1):
     - Purchases (= 3.12.3)
+  - sign_in_with_apple (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
@@ -473,6 +475,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
+  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
 
 SPEC REPOS:
   trunk:
@@ -511,6 +514,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_sign_in/ios"
   purchases_flutter:
     :path: ".symlinks/plugins/purchases_flutter/ios"
+  sign_in_with_apple:
+    :path: ".symlinks/plugins/sign_in_with_apple/ios"
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
@@ -540,6 +545,7 @@ SPEC CHECKSUMS:
   purchases_flutter: ff55c9a04b918dd20d20030d5b5f5a5859c28cb9
   PurchasesCoreSwift: dd3fd55a9895abd7906a3842bd36c7f7539a99d1
   PurchasesHybridCommon: 1d98dd58935a4fa1009c6e17f8b740973147b899
+  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
 
 PODFILE CHECKSUM: eaa40f483042ca9179e30eb4d828cd85a05aa1c3
 

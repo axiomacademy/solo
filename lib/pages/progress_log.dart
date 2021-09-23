@@ -516,13 +516,10 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                                   CrossAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Row(children: <Widget>[
-                                                  Text(mission.title,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline6),
-                                                  Spacer(),
-                                                ]),
+                                                Text(mission.title,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline6),
                                                 Container(
                                                     margin: EdgeInsets.only(
                                                         top: 10.0),

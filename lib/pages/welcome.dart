@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -90,6 +91,23 @@ class _WelcomePageState extends State<WelcomePage> {
                             fontWeight: FontWeight.w400, fontSize: 24))),
                 Padding(
                     padding: EdgeInsets.only(top: 20.0),
+                    child: SignInWithAppleButton(
+                      onPressed: () async {
+                        User? user = await AuthService.signInWithApple();
+                        print(user?.email);
+                        final learnerQuery = await learnerRef
+                            .where('email', isEqualTo: user?.email)
+                            .get();
+                        if (learnerQuery.size == 1) {
+                          // User already exists
+                          Navigator.of(context).push(HomePage.route());
+                        } else {
+                          Navigator.of(context).push(RegisterPage.route());
+                        }
+                      },
+                    )),
+                Padding(
+                    padding: EdgeInsets.only(top: 5.0),
                     child: ElevatedButton(
                         onPressed: () async {
                           User? user = await AuthService.signInWithGoogle();
@@ -111,8 +129,8 @@ class _WelcomePageState extends State<WelcomePage> {
                         child: Row(children: <Widget>[
                           SvgPicture.asset("./assets/img/google-icon.svg",
                               semanticsLabel: "Main Image",
-                              width: 17,
-                              height: 17),
+                              width: 20,
+                              height: 20),
                           Spacer(),
                           Text("SIGNIN WITH GOOGLE",
                               style: Theme.of(context).textTheme.button),

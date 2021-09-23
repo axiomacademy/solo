@@ -61,6 +61,7 @@ class ChallengeHandler {
   Future<void> createChallenge() async {
     User? user = FirebaseAuth.instance.currentUser!;
     // Take the energy requirements
+
     await EnergyService.createChallenge(user.email!);
 
     final logRef = FirebaseFirestore.instance
@@ -198,6 +199,11 @@ class _ChallengeCreateViewState extends State<ChallengeCreateView> {
                               margin: EdgeInsets.only(top: 20.0),
                               child: ElevatedButton(
                                   onPressed: () async {
+                                    if (_titleController.value.text == "" ||
+                                        _descriptionController.value.text ==
+                                            "") {
+                                      return;
+                                    }
                                     Provider.of<ChallengeHandler>(context,
                                             listen: false)
                                         .setChallengeParameters(
@@ -208,8 +214,8 @@ class _ChallengeCreateViewState extends State<ChallengeCreateView> {
                                               context,
                                               listen: false)
                                           .createChallenge();
-                                    } catch (e) {
-                                      print("HIII");
+                                    } on NotEnoughEnergy {
+                                      // Redirect to a energy topup screen
                                     } finally {
                                       widget.endLogFlow();
                                     }
@@ -328,13 +334,10 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                                   CrossAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Row(children: <Widget>[
-                                                  Text(mission.title,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline6),
-                                                  Spacer(),
-                                                ]),
+                                                Text(mission.title,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline6),
                                                 Container(
                                                     margin: EdgeInsets.only(
                                                         top: 10.0),

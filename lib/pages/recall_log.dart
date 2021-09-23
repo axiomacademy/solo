@@ -65,6 +65,7 @@ class ContentLogHandler {
     User? user = FirebaseAuth.instance.currentUser!;
     // Check if the energy requirements are met
     await EnergyService.completeLog(user.email!);
+
     final logRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/logs')
         .withConverter<Log>(
@@ -297,6 +298,10 @@ class _ContentViewState extends State<ContentView> {
                               margin: EdgeInsets.only(top: 20.0),
                               child: ElevatedButton(
                                   onPressed: () {
+                                    // Don't do anything if there is no title
+                                    if (_controller.value.text == "") {
+                                      return;
+                                    }
                                     Provider.of<ContentLogHandler>(context,
                                             listen: false)
                                         .setContentTitle(
@@ -420,13 +425,10 @@ class _MissionSelectViewState extends State<MissionSelectView> {
                                                   CrossAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Row(children: <Widget>[
-                                                  Text(mission.title,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline6),
-                                                  Spacer(),
-                                                ]),
+                                                Text(mission.title,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline6),
                                                 Container(
                                                     margin: EdgeInsets.only(
                                                         top: 10.0),

@@ -418,14 +418,11 @@ class _JourneyPageState extends State<JourneyPage> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Row(children: <Widget>[
-                                Text(mission.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(color: Colors.white)),
-                                Spacer(),
-                              ]),
+                              Text(mission.title,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6
+                                      ?.copyWith(color: Colors.white)),
                               Container(
                                   margin: EdgeInsets.only(top: 10.0),
                                   child: Text(
@@ -456,11 +453,11 @@ class _LogPageState extends State<LogPage> {
   late CollectionReference<ReviewCard> _cardRef;
 
   bool loadingReview = false;
+  User user = FirebaseAuth.instance.currentUser!;
 
   @override
   void initState() {
     // Setting up stream from firebase
-    User user = FirebaseAuth.instance.currentUser!;
     _missionRef = FirebaseFirestore.instance
         .collection('learners/${user.email}/missions')
         .withConverter<Mission>(
@@ -694,7 +691,15 @@ class _LogPageState extends State<LogPage> {
             child: Row(children: <Widget>[
               Expanded(
                   child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        try {
+                          await EnergyService.checkEnergy(user.email!);
+                        } catch (e) {
+                          final snackBar = SnackBar(
+                              content: Text("You don't have enough coins :("));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          return;
+                        }
                         Navigator.of(context).push(ContentLogPage.route());
                       },
                       child: Container(
@@ -715,7 +720,15 @@ class _LogPageState extends State<LogPage> {
                                       .subtitle1))))),
               Expanded(
                 child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      try {
+                        await EnergyService.checkEnergy(user.email!);
+                      } catch (e) {
+                        final snackBar = SnackBar(
+                            content: Text("You don't have enough coins :("));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        return;
+                      }
                       Navigator.of(context).push(ChallengeLogPage.route());
                     },
                     child: Container(
@@ -738,7 +751,15 @@ class _LogPageState extends State<LogPage> {
         Row(children: <Widget>[
           Expanded(
               child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    try {
+                      await EnergyService.checkEnergy(user.email!);
+                    } catch (e) {
+                      final snackBar = SnackBar(
+                          content: Text("You don't have enough coins :("));
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      return;
+                    }
                     Navigator.of(context).push(ProgressLogPage.route());
                   },
                   child: Container(
@@ -757,7 +778,15 @@ class _LogPageState extends State<LogPage> {
                               style: Theme.of(context).textTheme.subtitle1))))),
           Expanded(
             child: GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  try {
+                    await EnergyService.checkEnergy(user.email!);
+                  } catch (e) {
+                    final snackBar = SnackBar(
+                        content: Text("You don't have enough coins :("));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   Navigator.of(context).push(ReviewLogPage.route());
                 },
                 child: Container(
@@ -889,11 +918,17 @@ class _ExplorePageState extends State<ExplorePage> {
                                         child: ListTile(
                                           contentPadding: EdgeInsets.all(10.0),
                                           onTap: () async {
+                                            print("hello");
                                             try {
-                                              EnergyService.buyEnergyWithCoins(
-                                                  user.email!);
-                                            } on NotEnoughCoins catch (_) {
-                                              print("GIVE AN ERROR");
+                                              await EnergyService
+                                                  .buyEnergyWithCoins(
+                                                      user.email!);
+                                            } on NotEnoughCoins {
+                                              final snackBar = SnackBar(
+                                                  content: Text(
+                                                      "You don't have enough coins :("));
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(snackBar);
                                             }
                                           },
                                           tileColor: Colors.grey[100],
